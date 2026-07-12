@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "../lib/layout";
 import { NAV_LINKS } from "../data/content";
+import darkLogo from "../../imports/logo/FA_Nalar Logo_dark.svg";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,7 +13,13 @@ export function Navbar() {
     <>
       <nav className="pointer-events-none fixed left-0 top-0 z-50 flex w-full items-center justify-between px-6 py-8 text-black md:px-12">
         <div className="pointer-events-auto flex-1">
-          <a href="#home" className="relative z-[60] flex w-fit items-center" onClick={close}>
+          <a href="#home" className="relative z-[60] flex w-fit items-center gap-2" onClick={close}>
+            <div
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white p-2 md:h-12 md:w-12"
+              aria-hidden="true"
+            >
+              <img src={darkLogo} alt="" className="h-full w-full object-contain" />
+            </div>
             <span className="font-display text-3xl font-light tracking-[-1.2px] md:text-[40px]">
               Nalar
             </span>

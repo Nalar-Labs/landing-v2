@@ -28,6 +28,8 @@ export function CTA() {
           </h2>
           <a
             href={CTA_CONTENT.href}
+            target="_blank"
+            rel="noreferrer"
             className="group flex items-center gap-3 rounded-full bg-brand px-8 py-4 text-white transition-colors hover:bg-brand-hover"
           >
             <span className={cn(TYPE.body, "md:text-[36px] md:tracking-[-1.08px]")}>

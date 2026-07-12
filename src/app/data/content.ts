@@ -8,6 +8,8 @@ export type NavLink = {
   accent?: boolean;
 };
 
+export const CALENDLY_URL = "https://calendly.com/garda4199/30min";
+
 export const NAV_LINKS: NavLink[] = [
   { label: "Home", href: "#home" },
   { label: "Key Services", href: "#services" },
@@ -20,8 +22,8 @@ export const HERO = {
   headline:
     "Nalar Labs is an external Authentic Intelligences helping you implement the Artificial one",
   links: [
-    { label: "Book a call", href: "#contact" },
-    { label: "Refer someone-else", href: "#refer" },
+    { label: "Book a call", href: CALENDLY_URL },
+    { label: "Refer a friend", href: "#refer" },
   ],
 } as const;
 
@@ -118,5 +120,5 @@ export const APPROACH_STEPS: ApproachStep[] = [
 export const CTA = {
   headline: "Let's make your tool your hardest worker",
   buttonLabel: "Book a call",
-  href: "#contact",
+  href: CALENDLY_URL,
 } as const;
