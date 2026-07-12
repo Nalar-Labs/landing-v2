@@ -1,0 +1,9 @@
+/*
+ * Brand fonts are loaded via <link> in index.html (with preconnect) instead of
+ * a render-blocking CSS @import, for faster first paint and font-display: swap:
+ *   - Public Sans (300/400/500/600) → display / headings  → var(--nalar-font-display)
+ *   - Inter (400/500)               → body / inline links  → var(--nalar-font-body)
+ *
+ * Family tokens live in src/styles/theme.css. Keep this file as the place to
+ * add @font-face fallbacks if the app moves to self-hosted fonts.
+ */
