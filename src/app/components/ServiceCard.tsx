@@ -63,7 +63,7 @@ export function ServiceCard({
       </motion.h4>
       <motion.p
         style={reducedMotion ? undefined : { color: bodyColor }}
-        className={cn(TYPE.body, "relative z-10")}
+        className={cn(TYPE.body, "relative z-10 text-muted-ink")}
       >
         {description}
       </motion.p>
