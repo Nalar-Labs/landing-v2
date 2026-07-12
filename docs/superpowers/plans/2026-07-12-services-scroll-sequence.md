@@ -621,8 +621,8 @@ git commit -m "feat: sequence Services card highlight off scroll progress, swap 
 ### Task 7: Hero headline data (`content.ts`)
 
 **Files:**
-- Modify: `src/app/data/content.ts:19-26` (the `HERO` constant)
-- Modify: `src/app/sections/Hero.tsx:18-20` (stop referencing the removed `HERO.headline` — full rewrite lands in Task 9, but the build must stay green after this task, so swap the reference in the same commit)
+- Modify: `src/app/data/content.ts:21-29` (the `HERO` constant — note `CALENDLY_URL` is defined just above it at line 11 and must stay)
+- Modify: `src/app/sections/Hero.tsx:42-44` (stop referencing the removed `HERO.headline` — full rewrite lands in Task 9, but the build must stay green after this task, so swap the reference in the same commit)
 - Test: `src/app/data/content.test.ts`
 
 **Interfaces:**
@@ -677,7 +677,7 @@ Expected: FAIL — `HERO.lines` is undefined (current `HERO` only has `headline`
 
 - [ ] **Step 3: Update the `HERO` constant**
 
-Replace `src/app/data/content.ts` lines 19–26 with:
+Replace the `HERO` constant in `src/app/data/content.ts` (lines 21–29; keep the `CALENDLY_URL` export above it untouched) with:
 
 ```typescript
 export type HeroLine = {
@@ -700,13 +700,15 @@ export const HERO = {
     { static: "You just need the right partners for your business." },
   ],
   links: [
-    { label: "Book a call", href: "#contact" },
-    { label: "Refer someone-else", href: "#refer" },
+    { label: "Book a call", href: CALENDLY_URL },
+    { label: "Refer a friend", href: "#refer" },
   ],
 } as const satisfies { lines: readonly HeroLine[]; links: readonly { label: string; href: string }[] };
 ```
 
-Then, in `src/app/sections/Hero.tsx`, replace the single `{HERO.headline}` reference (line 19) with a temporary static render so the build stays green until Task 9's full rewrite:
+(The `links` values are copied verbatim from the current file — they were recently rewired to Calendly and must not regress to older `#contact` / "Refer someone-else" values.)
+
+Then, in `src/app/sections/Hero.tsx`, replace the single `{HERO.headline}` reference (line 43, inside the `<h1>`) with a temporary static render so the build stays green until Task 9's full rewrite. **Touch nothing else in Hero.tsx** — the referral modal, `handleLinkClick`, and external-link handling all stay exactly as they are:
 
 ```tsx
 <h1 className={cn(TYPE.hero, "mx-auto mb-16 max-w-[1345px] md:mb-24")}>
@@ -845,82 +847,169 @@ git commit -m "feat: add CyclingWord looping-text component"
 **Interfaces:**
 - Consumes: `HERO.lines` from Task 7, `CyclingWord` from Task 8.
 
-- [ ] **Step 1: Rewrite the hero**
+- [ ] **Step 1: Rewrite the hero headline block**
+
+Hero.tsx also contains a referral modal (`isReferModalOpen` state, `generateReferralLink`, the `{isReferModalOpen && ...}` overlay) and Calendly link handling (`handleLinkClick`, `isExternal` target/rel logic). **All of that stays byte-for-byte identical.** Only two regions change: the `<h1>` contents (lines 42–44) and the wrapper structure around the headline + links (the single `motion.div` becomes per-line staggered animation). The complete new file:
 
 ```tsx
 // src/app/sections/Hero.tsx
+import { useMemo, useState, type MouseEvent } from "react";
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
 import { cn, TYPE } from "../lib/layout";
-import { HERO } from "../data/content";
+import { CALENDLY_URL, HERO } from "../data/content";
 import { CyclingWord } from "../components/CyclingWord";
 
 /** Line 2's cycle fires this long after Line 1's (spec: ~600ms offset). */
 const CYCLE_OFFSET_MS = 600;
 
 export function Hero() {
+  const [isReferModalOpen, setIsReferModalOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [referralLink, setReferralLink] = useState("");
+
+  const canGenerateLink = useMemo(() => /\S+@\S+\.\S+/.test(email.trim()), [email]);
+
+  const generateReferralLink = () => {
+    const url = new URL(CALENDLY_URL);
+    url.searchParams.set("utm_source", "friend_referral");
+    url.searchParams.set("utm_medium", "referral");
+    url.searchParams.set("utm_campaign", "nalar_referral");
+    url.searchParams.set("utm_content", email.trim().toLowerCase());
+    setReferralLink(url.toString());
+  };
+
+  const handleLinkClick = (href: string) => (event: MouseEvent<HTMLAnchorElement>) => {
+    if (href === "#refer") {
+      event.preventDefault();
+      setIsReferModalOpen(true);
+    }
+  };
+
   return (
-    <section
-      id="home"
-      className="relative flex min-h-screen flex-col items-center justify-center px-6 pb-16 pt-32"
-    >
-      <div className="w-full max-w-[1400px] text-center">
-        <h1 className={cn(TYPE.hero, "mx-auto mb-16 max-w-[1345px] md:mb-24")}>
-          {HERO.lines.map((line, lineIndex) => (
-            <motion.span
-              key={line.static}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut", delay: lineIndex * 0.2 }}
-              className="block"
-            >
-              {line.static}
-              {line.cycling && (
-                <>
-                  {" "}
-                  <CyclingWord
-                    words={line.cycling}
-                    offsetMs={lineIndex * CYCLE_OFFSET_MS}
-                  />
-                </>
-              )}
-            </motion.span>
-          ))}
-        </h1>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut", delay: 0.6 }}
-          className="flex flex-col items-center justify-center gap-8 font-body text-xl sm:flex-row sm:gap-16 md:text-[24px]"
-        >
-          {HERO.links.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="transition-opacity hover:opacity-60"
-            >
-              {link.label}
-            </a>
-          ))}
-        </motion.div>
-      </div>
-
-      {/* Scroll affordance — mobile */}
-      <a
-        href="#services"
-        className="absolute bottom-8 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full bg-ink-soft px-5 py-2 text-sm font-light text-white md:hidden"
+    <>
+      <section
+        id="home"
+        className="relative flex min-h-screen flex-col items-center justify-center px-6 pb-16 pt-32"
       >
-        Explore Nalar
-        <ArrowRight className="size-4" />
-      </a>
-    </section>
+        <div className="w-full max-w-[1400px] text-center">
+          <h1 className={cn(TYPE.hero, "mx-auto mb-16 max-w-[1345px] md:mb-24")}>
+            {HERO.lines.map((line, lineIndex) => (
+              <motion.span
+                key={line.static}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut", delay: lineIndex * 0.2 }}
+                className="block"
+              >
+                {line.static}
+                {line.cycling && (
+                  <>
+                    {" "}
+                    <CyclingWord
+                      words={line.cycling}
+                      offsetMs={lineIndex * CYCLE_OFFSET_MS}
+                    />
+                  </>
+                )}
+              </motion.span>
+            ))}
+          </h1>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.6 }}
+            className="flex flex-col items-center justify-center gap-8 font-body text-xl sm:flex-row sm:gap-16 md:text-[24px]"
+          >
+            {HERO.links.map((link) => {
+              const isExternal = link.href.startsWith("http");
+
+              return (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  onClick={handleLinkClick(link.href)}
+                  target={isExternal ? "_blank" : undefined}
+                  rel={isExternal ? "noreferrer" : undefined}
+                  className="transition-opacity hover:opacity-60"
+                >
+                  {link.label}
+                </a>
+              );
+            })}
+          </motion.div>
+        </div>
+
+        {/* Scroll affordance — mobile */}
+        <a
+          href="#services"
+          className="absolute bottom-8 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full bg-ink-soft px-5 py-2 text-sm font-light text-white md:hidden"
+        >
+          Explore Nalar
+          <ArrowRight className="size-4" />
+        </a>
+      </section>
+
+      {isReferModalOpen && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-xl rounded-3xl bg-white p-6 text-left text-black md:p-8">
+            <div className="mb-6 flex items-start justify-between gap-4">
+              <h2 className="font-display text-3xl leading-tight tracking-[-1px] md:text-4xl">
+                Refer a friend
+              </h2>
+              <button
+                type="button"
+                onClick={() => setIsReferModalOpen(false)}
+                aria-label="Close referral modal"
+                className="rounded-full border border-black/20 px-3 py-1 text-sm transition-colors hover:bg-black hover:text-white"
+              >
+                Close
+              </button>
+            </div>
+
+            <label className="mb-2 block font-body text-sm">Your email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="you@example.com"
+              className="mb-4 w-full rounded-xl border border-black/20 px-4 py-3 outline-none transition-colors focus:border-black"
+            />
+
+            <button
+              type="button"
+              disabled={!canGenerateLink}
+              onClick={generateReferralLink}
+              className="rounded-full bg-black px-6 py-3 text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Generate referral link
+            </button>
+
+            {referralLink && (
+              <div className="mt-5 rounded-xl bg-black/5 p-4">
+                <p className="mb-2 text-sm text-black/70">Your referral link</p>
+                <a
+                  href={referralLink}
+                  className="break-all text-sm underline"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {referralLink}
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 ```
 
 Notes on intent, for the implementer:
-- The old single `motion.div` wrapper around the whole hero is replaced by per-line `motion.span`s (staggered `delay: 0, 0.2, 0.4`) plus a `delay: 0.6` wrapper for the links row, so the three lines visibly enter one after another and the links come in last.
+- The referral modal, `handleLinkClick`, `generateReferralLink`, and the `isExternal` link handling are pre-existing features — they appear above unchanged and must survive this task verbatim.
+- The old single `motion.div` wrapper around headline+links is replaced by per-line `motion.span`s (staggered `delay: 0, 0.2, 0.4`) plus a `delay: 0.6` wrapper for the links row, so the three lines visibly enter one after another and the links come in last.
 - The cycling word inherits the headline's color and type styles — no `text-brand` accent, keeping the "one accent per view" rule (the orange stays reserved for the nav CTA).
 - `offsetMs={lineIndex * CYCLE_OFFSET_MS}` gives Line 1 `0` and Line 2 `600` — the spec's independent-but-offset cycling. Line 3 has no `cycling` list so it renders static.
 
@@ -937,6 +1026,7 @@ Checklist:
 6. Words of different lengths (`SaaS` vs `paid software`, `consultants` vs `marketers`) don't cause the line to jitter vertically; a modest horizontal reflow of the line is acceptable, ugly jumps are not — if it's visually bad, add a `min-w` on the `CyclingWord` wrapper sized to the longest word and note it in the commit.
 7. DevTools → Rendering → `prefers-reduced-motion: reduce` → reload: hero shows "You don't need expensive tools" / "You don't need to hire consultants" / Line 3, with **no** word cycling ever starting; no console errors.
 8. Mobile width (390px): the three lines wrap acceptably at the `48px` hero size and the cycling word stays on-screen.
+9. Pre-existing features regression check: "Refer a friend" still opens the referral modal (email → generate link flow works, Close dismisses it), and "Book a call" still opens the Calendly URL in a new tab.
 
 Expected: all items pass, no console errors or warnings.
 
