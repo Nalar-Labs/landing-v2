@@ -18,14 +18,30 @@ export const NAV_LINKS: NavLink[] = [
   { label: "Book A Free Session", href: "#contact", accent: true },
 ];
 
+export type HeroLine = {
+  /** The part of the line that never changes. */
+  static: string;
+  /** Words the trailing slot loops through; omit for a fully static line. */
+  cycling?: readonly string[];
+};
+
 export const HERO = {
-  headline:
-    "Nalar Labs is an external Authentic Intelligences helping you implement the Artificial one",
+  lines: [
+    {
+      static: "You don't need expensive",
+      cycling: ["tools", "SaaS", "paid software"],
+    },
+    {
+      static: "You don't need to hire",
+      cycling: ["consultants", "developers", "designers", "marketers"],
+    },
+    { static: "You just need the right partners for your business." },
+  ],
   links: [
     { label: "Book a call", href: CALENDLY_URL },
     { label: "Refer a friend", href: "#refer" },
   ],
-} as const;
+} as const satisfies { lines: readonly HeroLine[]; links: readonly { label: string; href: string }[] };
 
 export type Service = {
   title: string;

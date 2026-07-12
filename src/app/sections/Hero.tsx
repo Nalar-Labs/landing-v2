@@ -40,7 +40,12 @@ export function Hero() {
           className="w-full max-w-[1400px] text-center"
         >
           <h1 className={cn(TYPE.hero, "mx-auto mb-16 max-w-[1345px] md:mb-24")}>
-            {HERO.headline}
+            {HERO.lines.map((line) => (
+              <span key={line.static} className="block">
+                {line.static}
+                {line.cycling ? ` ${line.cycling[0]}` : ""}
+              </span>
+            ))}
           </h1>
 
           <div className="flex flex-col items-center justify-center gap-8 font-body text-xl sm:flex-row sm:gap-16 md:text-[24px]">
