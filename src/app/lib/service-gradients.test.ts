@@ -1,0 +1,32 @@
+// src/app/lib/service-gradients.test.ts
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { SERVICE_CARD_GRADIENTS } from "./service-gradients.ts";
+import { SERVICE_CARD_COUNT } from "./service-scroll-sequence.ts";
+
+test("there is exactly one gradient per card", () => {
+  assert.equal(SERVICE_CARD_GRADIENTS.length, SERVICE_CARD_COUNT);
+});
+
+test("every gradient only references brand CSS variables, never a raw hex", () => {
+  const hexPattern = /#[0-9a-fA-F]{3,8}/;
+  for (const gradient of SERVICE_CARD_GRADIENTS) {
+    assert.equal(
+      hexPattern.test(gradient),
+      false,
+      `gradient "${gradient}" contains a hard-coded hex value`,
+    );
+    assert.match(gradient, /^linear-gradient\(/);
+  }
+});
+
+test("every gradient only references the whitelisted grey tokens", () => {
+  const allowedVar = /var\(--nalar-(line|surface)\)/;
+  for (const gradient of SERVICE_CARD_GRADIENTS) {
+    const varRefs = gradient.match(/var\([^)]*\)/g) ?? [];
+    assert.ok(varRefs.length > 0, `gradient "${gradient}" has no var() references`);
+    for (const ref of varRefs) {
+      assert.match(ref, allowedVar);
+    }
+  }
+});

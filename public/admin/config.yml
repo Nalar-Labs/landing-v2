@@ -1,0 +1,28 @@
+backend:
+  name: github
+  repo: Nalar-Labs/landing-v2
+  branch: main
+
+# Uploaded images land in the repo and are served by Vite from /images/...
+media_folder: public/images/portfolio
+public_folder: /images/portfolio
+
+collections:
+  - name: portfolio
+    label: Portfolio
+    folder: src/content/portfolio
+    format: json
+    extension: json
+    create: true
+    identifier_field: title
+    summary: "{{title}} — {{client}}"
+    sortable_fields: [order, title]
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: client, label: Client, widget: string, required: false }
+      - { name: summary, label: Summary, widget: text, hint: "One sentence shown on the card and at the top of the popup." }
+      - { name: coverImage, label: Cover image, widget: image, required: false }
+      - { name: tags, label: Tags, widget: list, required: false, default: [] }
+      - { name: order, label: Order, widget: number, value_type: int, default: 0, hint: "Carousel position, lowest first. Keep unique." }
+      - { name: draft, label: Draft, widget: boolean, default: false, hint: "Drafts are hidden from the site." }
+      - { name: body, label: Body, widget: markdown, hint: "The popup page content. Headings, lists, links, and images all work." }

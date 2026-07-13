@@ -18,14 +18,27 @@ export const NAV_LINKS: NavLink[] = [
   { label: "Book A Free Session", href: "#contact", accent: true },
 ];
 
+export type HeroLine = {
+  /** The part of the line that never changes. */
+  static: string;
+  /** Words the trailing slot loops through; omit for a fully static line. */
+  cycling?: readonly string[];
+};
+
 export const HERO = {
-  headline:
-    "Nalar Labs is an external Authentic Intelligences helping you implement the Artificial one",
+  lines: [
+    {
+      static: "You don't need expensive",
+      cycling: ["SaaS", "AI Tools", "developers", "consultants"],
+    },
+
+    { static: "You just need really good technical partners." },
+  ],
   links: [
     { label: "Book a call", href: CALENDLY_URL },
     { label: "Refer a friend", href: "#refer" },
   ],
-} as const;
+} as const satisfies { lines: readonly HeroLine[]; links: readonly { label: string; href: string }[] };
 
 export type Service = {
   title: string;
@@ -87,7 +100,6 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
 export type ApproachStep = {
   title: string;
   subtitle?: string;
-  active?: boolean;
   /** Numbered list body (mutually exclusive with `paragraph`). */
   steps?: string[];
   paragraph?: string;
@@ -97,7 +109,6 @@ export const APPROACH_STEPS: ApproachStep[] = [
   {
     title: "Discovery & scoping,",
     subtitle: "Technology is the answer but what was the question?",
-    active: true,
     steps: [
       "Intro call — problem discovery, fit assessment (Free)",
       "Solution presentation — we come back with a recommended approach and rough scope (may be paid)",
