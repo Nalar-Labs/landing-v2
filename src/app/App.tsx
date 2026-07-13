@@ -3,6 +3,7 @@ import { Navbar } from "./sections/Navbar";
 import { Hero } from "./sections/Hero";
 import { Services } from "./sections/Services";
 import { Approach } from "./sections/Approach";
+import { Portfolio } from "./sections/Portfolio";
 import { CTA } from "./sections/CTA";
 import { SmoothScroll } from "./lib/smooth-scroll";
 
@@ -19,6 +20,7 @@ export default function App() {
             <Hero />
             <Services />
             <Approach />
+            <Portfolio />
             <CTA />
           </main>
         </div>
