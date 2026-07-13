@@ -13,11 +13,11 @@ export const SERVICE_CARD_GRADIENTS = [
   // 1 — Technical Cost Optimisation
   "linear-gradient(135deg, var(--nalar-surface) 0%, var(--nalar-line) 100%)",
   // 2 — Vibe-to-Production
-  "linear-gradient(225deg, var(--nalar-line) 0%, var(--nalar-surface) 100%)",
+  "linear-gradient(135deg, var(--nalar-surface) 0%, var(--nalar-line) 100%)",
   // 3 — Internal Tool Building
-  "linear-gradient(225deg, var(--nalar-surface) 0%, var(--nalar-line) 100%)",
+  "linear-gradient(135deg, var(--nalar-surface) 0%, var(--nalar-line) 100%)",
   // 4 — External Product Development
-  "linear-gradient(315deg, var(--nalar-line) 0%, var(--nalar-surface) 100%)",
+  "linear-gradient(135deg, var(--nalar-surface) 0%, var(--nalar-line) 100%)",
   // 5 — Agentic Deployment
-  "linear-gradient(315deg, var(--nalar-surface) 0%, var(--nalar-line) 100%)",
+  "linear-gradient(135deg, var(--nalar-surface) 0%, var(--nalar-line) 100%)",
 ] as const;

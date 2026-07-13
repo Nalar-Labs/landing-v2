@@ -37,3 +37,24 @@ export function getCardIntensity(
   if (Math.abs(result - 1) < 1e-10) return 1;
   return result;
 }
+
+/**
+ * Returns 0-1: how "expanded" the card at `index` should be at the given
+ * overall scroll `progress`. Unlike getCardIntensity's travelling spotlight,
+ * expansion is ramp-and-hold: a card grows over the first 60% of its band
+ * and then STAYS expanded for the rest of the scroll — earlier cards remain
+ * open while later ones join in. Scrolling back up reverses it naturally.
+ */
+export function getCardExpansion(
+  progress: number,
+  index: number,
+  count: number = SERVICE_CARD_COUNT,
+): number {
+  const band = 1 / count;
+  const start = index * band;
+  const rampEnd = start + band * 0.6;
+
+  if (progress <= start) return 0;
+  if (progress >= rampEnd) return 1;
+  return (progress - start) / (rampEnd - start);
+}

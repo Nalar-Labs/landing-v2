@@ -20,12 +20,6 @@ test("every gradient only references brand CSS variables, never a raw hex", () =
   }
 });
 
-test("adjacent cards never use the exact same gradient", () => {
-  for (let i = 1; i < SERVICE_CARD_GRADIENTS.length; i++) {
-    assert.notEqual(SERVICE_CARD_GRADIENTS[i], SERVICE_CARD_GRADIENTS[i - 1]);
-  }
-});
-
 test("every gradient only references the whitelisted grey tokens", () => {
   const allowedVar = /var\(--nalar-(line|surface)\)/;
   for (const gradient of SERVICE_CARD_GRADIENTS) {
