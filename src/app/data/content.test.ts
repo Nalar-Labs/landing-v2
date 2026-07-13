@@ -1,7 +1,8 @@
 // src/app/data/content.test.ts
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { HERO } from "./content.ts";
+import { HERO, SERVICE_GROUPS } from "./content.ts";
+import { SERVICE_CARD_COUNT } from "../lib/service-scroll-sequence.ts";
 
 test("hero has exactly three lines", () => {
   assert.equal(HERO.lines.length, 3);
@@ -34,4 +35,9 @@ test("every cycling list has at least two words (a 1-word loop would look broken
   for (const line of HERO.lines) {
     if (line.cycling) assert.ok(line.cycling.length >= 2);
   }
+});
+
+test("SERVICE_CARD_COUNT matches the actual number of services in content", () => {
+  const actual = SERVICE_GROUPS.reduce((n, g) => n + g.items.length, 0);
+  assert.equal(actual, SERVICE_CARD_COUNT);
 });

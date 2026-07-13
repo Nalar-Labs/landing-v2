@@ -12,7 +12,7 @@
 
 - Never hard-code hex colors in components — reference the existing CSS variables in `src/styles/theme.css` (`--nalar-brand`, `--nalar-brand-hover`, `--nalar-ink`, `--nalar-ink-soft`, `--nalar-surface`, `--nalar-muted-ink`). One narrow, documented exception: Framer Motion's `useTransform` color interpolation needs literal parseable color strings (it cannot interpolate a `var()` reference), so the two text-color crossfades in Task 5 use literal hex values with a comment naming the token they mirror.
 - **No drop shadows** — depth comes from surface color and motion only (`guidelines/Guidelines.md` §5). The inflate effect uses `scale` + gradient-overlay opacity, never `box-shadow`.
-- **One accent per view** in spirit — all 6 card gradients are built only from the existing brand tokens (orange, orange-hover, ink, ink-soft); no new hues are introduced.
+- **Amended 2026-07-12 (owner decision at final review):** card gradients use only the grey tokens (`--nalar-line`, `--nalar-surface`) and card text keeps its static dark colors — the original orange-gradient + white-text treatment failed the 3:1 large-text contrast minimum in held scroll states.
 - Cards keep `rounded-card` (30px) and the existing `gap-6` / 3-column grid — this plan does not change `Services.tsx`'s grid layout.
 - Respect `prefers-reduced-motion`: gate both the Lenis smoothing and the card scroll-transforms (`guidelines/Guidelines.md` §6, §8).
 - Follow the existing code style: `cn()` + `TYPE`/`SECTION`/`CONTAINER` constants from `src/app/lib/layout.ts`, content data kept out of section components.

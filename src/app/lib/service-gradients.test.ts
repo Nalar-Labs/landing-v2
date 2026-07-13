@@ -25,3 +25,14 @@ test("adjacent cards never use the exact same gradient", () => {
     assert.notEqual(SERVICE_CARD_GRADIENTS[i], SERVICE_CARD_GRADIENTS[i - 1]);
   }
 });
+
+test("every gradient only references the whitelisted grey tokens", () => {
+  const allowedVar = /var\(--nalar-(line|surface)\)/;
+  for (const gradient of SERVICE_CARD_GRADIENTS) {
+    const varRefs = gradient.match(/var\([^)]*\)/g) ?? [];
+    assert.ok(varRefs.length > 0, `gradient "${gradient}" has no var() references`);
+    for (const ref of varRefs) {
+      assert.match(ref, allowedVar);
+    }
+  }
+});

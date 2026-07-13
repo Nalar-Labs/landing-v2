@@ -13,12 +13,6 @@ type ServiceCardProps = Service & {
   reducedMotion: boolean;
 };
 
-// Mirrors --nalar-ink / --nalar-muted-ink in theme.css. Framer Motion's
-// color interpolation needs literal color strings, not var() references.
-const REST_TITLE_COLOR = "#1e1e1e";
-const REST_BODY_COLOR = "#9a9a9a";
-const INFLATED_TEXT_COLOR = "#ffffff";
-
 export function ServiceCard({
   title,
   description,
@@ -33,8 +27,6 @@ export function ServiceCard({
   );
   const scale = useTransform(intensity, [0, 1], [1, 1.06]);
   const gradientOpacity = useTransform(intensity, [0, 1], [0, 0.92]);
-  const titleColor = useTransform(intensity, [0, 1], [REST_TITLE_COLOR, INFLATED_TEXT_COLOR]);
-  const bodyColor = useTransform(intensity, [0, 1], [REST_BODY_COLOR, INFLATED_TEXT_COLOR]);
 
   return (
     <motion.div
@@ -55,18 +47,8 @@ export function ServiceCard({
           className="pointer-events-none absolute inset-0 rounded-card"
         />
       )}
-      <motion.h4
-        style={reducedMotion ? undefined : { color: titleColor }}
-        className={cn(TYPE.cardTitle, "relative z-10 mb-8")}
-      >
-        {title}
-      </motion.h4>
-      <motion.p
-        style={reducedMotion ? undefined : { color: bodyColor }}
-        className={cn(TYPE.body, "relative z-10 text-muted-ink")}
-      >
-        {description}
-      </motion.p>
+      <h4 className={cn(TYPE.cardTitle, "relative z-10 mb-8")}>{title}</h4>
+      <p className={cn(TYPE.body, "relative z-10 text-muted-ink")}>{description}</p>
     </motion.div>
   );
 }

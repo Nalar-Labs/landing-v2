@@ -1,3 +1,4 @@
+import { MotionConfig } from "motion/react";
 import { Navbar } from "./sections/Navbar";
 import { Hero } from "./sections/Hero";
 import { Services } from "./sections/Services";
@@ -7,16 +8,18 @@ import { SmoothScroll } from "./lib/smooth-scroll";
 
 export default function App() {
   return (
-    <SmoothScroll>
-      <div className="min-h-screen overflow-x-hidden bg-white font-display text-black selection:bg-brand selection:text-white">
-        <Navbar />
-        <main>
-          <Hero />
-          <Services />
-          <Approach />
-          <CTA />
-        </main>
-      </div>
-    </SmoothScroll>
+    <MotionConfig reducedMotion="user">
+      <SmoothScroll>
+        <div className="min-h-screen overflow-x-hidden bg-white font-display text-black selection:bg-brand selection:text-white">
+          <Navbar />
+          <main>
+            <Hero />
+            <Services />
+            <Approach />
+            <CTA />
+          </main>
+        </div>
+      </SmoothScroll>
+    </MotionConfig>
   );
 }
