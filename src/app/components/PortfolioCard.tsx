@@ -32,7 +32,7 @@ export function PortfolioCard({ item, onOpen }: PortfolioCardProps) {
         />
       )}
       <div className="flex flex-1 flex-col p-6 md:p-8">
-        <h3 className={cn(TYPE.cardTitle, "mb-2")}>{item.title}</h3>
+        <span className={cn(TYPE.cardTitle, "mb-2 block")}>{item.title}</span>
         {item.client && (
           <p className="mb-4 text-sm text-muted-ink">{item.client}</p>
         )}
