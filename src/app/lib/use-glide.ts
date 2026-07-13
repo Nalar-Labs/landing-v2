@@ -40,6 +40,15 @@ export function useGlide(slideCount: number, reducedMotion: boolean) {
       setActiveIndex(glide.index);
     });
     glide.mount();
+    // Glide's carousel mode clones slides for looping; the clones duplicate
+    // the card buttons in the a11y tree but React handlers don't survive
+    // cloneNode, so they'd be dead controls — hide them from AT and tab order.
+    root.querySelectorAll(".glide__slide--clone").forEach((clone) => {
+      clone.setAttribute("aria-hidden", "true");
+      clone.querySelectorAll("button, a").forEach((el) => {
+        (el as HTMLElement).tabIndex = -1;
+      });
+    });
     // Sync React state with where the new instance actually started.
     activeIndexRef.current = glide.index;
     setActiveIndex(glide.index);
