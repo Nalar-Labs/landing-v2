@@ -44,13 +44,18 @@ export function PortfolioCarousel({
             onClick={() => goTo(index)}
             aria-label={`Show ${item.title}`}
             aria-current={index === activeIndex}
-            className={cn(
-              "h-2 rounded-full transition-all duration-300",
-              index === activeIndex
-                ? "w-6 bg-black"
-                : "w-2 bg-black/20 hover:bg-black/40",
-            )}
-          />
+            className="group flex h-6 w-6 items-center justify-center"
+          >
+            <span
+              aria-hidden="true"
+              className={cn(
+                "h-2 rounded-full transition-all duration-300",
+                index === activeIndex
+                  ? "w-6 bg-black"
+                  : "w-2 bg-black/20 group-hover:bg-black/40",
+              )}
+            />
+          </button>
         ))}
       </div>
     </div>

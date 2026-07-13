@@ -71,3 +71,13 @@ test("throws a descriptive error on missing required fields", () => {
 test("throws on non-object entries (malformed content file)", () => {
   assert.throws(() => parsePortfolioItems(["nope"]), /object/i);
 });
+
+test("throws on non-string tag entries and non-array tags", () => {
+  assert.throws(() => parsePortfolioItems([{ ...valid, tags: [1, 2] }]), /tags/);
+  assert.throws(() => parsePortfolioItems([{ ...valid, tags: "React" }]), /tags/);
+});
+
+test("throws on non-number or NaN order when the field is present", () => {
+  assert.throws(() => parsePortfolioItems([{ ...valid, order: "2" }]), /order/);
+  assert.throws(() => parsePortfolioItems([{ ...valid, order: NaN }]), /order/);
+});

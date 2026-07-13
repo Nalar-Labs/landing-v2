@@ -17,11 +17,16 @@ export type PortfolioItem = {
   body: string;
 };
 
+function labelOf(record: Record<string, unknown>): string {
+  return typeof record.title === "string" && record.title.trim() !== ""
+    ? record.title
+    : "(untitled)";
+}
+
 function requireString(record: Record<string, unknown>, key: string): string {
   const value = record[key];
   if (typeof value !== "string" || value.trim() === "") {
-    const label = typeof record.title === "string" && record.title !== "" ? record.title : "(untitled)";
-    throw new Error(`Portfolio item "${label}": missing required field "${key}"`);
+    throw new Error(`Portfolio item "${labelOf(record)}": missing required field "${key}"`);
   }
   return value;
 }
@@ -30,6 +35,24 @@ function optionalString(record: Record<string, unknown>, key: string): string | 
   const value = record[key];
   // The CMS writes "" when a field is cleared; treat that as absent.
   return typeof value === "string" && value.trim() !== "" ? value : undefined;
+}
+
+function tagsOf(record: Record<string, unknown>): string[] {
+  const value = record.tags;
+  if (value === undefined) return [];
+  if (!Array.isArray(value) || value.some((tag) => typeof tag !== "string")) {
+    throw new Error(`Portfolio item "${labelOf(record)}": "tags" must be an array of strings`);
+  }
+  return value as string[];
+}
+
+function orderOf(record: Record<string, unknown>): number {
+  const value = record.order;
+  if (value === undefined) return 0;
+  if (typeof value !== "number" || Number.isNaN(value)) {
+    throw new Error(`Portfolio item "${labelOf(record)}": "order" must be a number`);
+  }
+  return value;
 }
 
 /**
@@ -51,10 +74,8 @@ export function parsePortfolioItems(raw: unknown[]): PortfolioItem[] {
       client: optionalString(record, "client"),
       summary: requireString(record, "summary"),
       coverImage: optionalString(record, "coverImage"),
-      tags: Array.isArray(record.tags)
-        ? record.tags.filter((tag): tag is string => typeof tag === "string")
-        : [],
-      order: typeof record.order === "number" ? record.order : 0,
+      tags: tagsOf(record),
+      order: orderOf(record),
       body: requireString(record, "body"),
     });
   }

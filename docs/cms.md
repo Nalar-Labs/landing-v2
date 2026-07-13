@@ -31,6 +31,10 @@ GitHub backend needs OAuth:
 2. Register a GitHub OAuth app and give its credentials to the Worker.
 3. Add `base_url: https://<worker-url>` under `backend:` in
    `public/admin/config.yml`.
+4. Before enabling production sign-in, pin the `@sveltia/cms` script in
+   `public/admin/index.html` to an exact version (e.g.
+   `@sveltia/cms@X.Y.Z`) — an unpinned third-party script on a page that
+   handles GitHub tokens is a supply-chain risk.
 
 Until then, `/admin/` on the deployed site will show a GitHub sign-in that
 cannot complete — that is expected.

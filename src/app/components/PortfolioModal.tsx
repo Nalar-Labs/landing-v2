@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import {
   Dialog,
@@ -15,18 +16,25 @@ type PortfolioModalProps = {
 };
 
 export function PortfolioModal({ item, onClose }: PortfolioModalProps) {
+  // Radix keeps the dialog mounted ~200ms for its exit animation after
+  // `open` flips false; keep rendering the last item so the shell doesn't
+  // empty out mid-animation.
+  const lastItemRef = useRef<PortfolioItem | null>(null);
+  if (item) lastItemRef.current = item;
+  const shown = item ?? lastItemRef.current;
+
   return (
     <Dialog open={item !== null} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="w-[calc(100%-2rem)] gap-0 overflow-hidden rounded-card border-line p-0 sm:max-w-3xl">
-        {item && (
+        {shown && (
           /* data-lenis-prevent: Lenis owns wheel events site-wide; without
              it the modal body cannot scroll independently of the page.
              Scrolling an inner div (not DialogContent) keeps the close X
              pinned while long content scrolls. */
           <div data-lenis-prevent className="max-h-[85vh] overflow-y-auto">
-            {item.coverImage ? (
+            {shown.coverImage ? (
               <img
-                src={item.coverImage}
+                src={shown.coverImage}
                 alt=""
                 className="aspect-[16/9] w-full object-cover"
               />
@@ -38,19 +46,19 @@ export function PortfolioModal({ item, onClose }: PortfolioModalProps) {
             )}
             <article className="p-8 md:p-12">
               <DialogTitle className={cn(TYPE.cardTitle, "mb-1")}>
-                {item.title}
+                {shown.title}
               </DialogTitle>
-              {item.client && (
-                <p className="mb-4 text-sm text-muted-ink">{item.client}</p>
+              {shown.client && (
+                <p className="mb-4 text-sm text-muted-ink">{shown.client}</p>
               )}
               <DialogDescription
                 className={cn(TYPE.body, "mb-6 text-muted-ink")}
               >
-                {item.summary}
+                {shown.summary}
               </DialogDescription>
-              {item.tags.length > 0 && (
+              {shown.tags.length > 0 && (
                 <ul className="mb-8 flex flex-wrap gap-2">
-                  {item.tags.map((tag) => (
+                  {shown.tags.map((tag) => (
                     <li
                       key={tag}
                       className="rounded-full border border-line px-3 py-1 text-sm text-muted-ink"
@@ -61,7 +69,7 @@ export function PortfolioModal({ item, onClose }: PortfolioModalProps) {
                 </ul>
               )}
               <div className="prose prose-neutral max-w-none">
-                <ReactMarkdown>{item.body}</ReactMarkdown>
+                <ReactMarkdown>{shown.body}</ReactMarkdown>
               </div>
             </article>
           </div>
