@@ -1,8 +1,13 @@
+// src/app/sections/Hero.tsx
 import { useMemo, useState, type MouseEvent } from "react";
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
 import { cn, TYPE } from "../lib/layout";
 import { CALENDLY_URL, HERO } from "../data/content";
+import { CyclingWord } from "../components/CyclingWord";
+
+/** Line 2's cycle fires this long after Line 1's (spec: ~600ms offset). */
+const CYCLE_OFFSET_MS = 600;
 
 export function Hero() {
   const [isReferModalOpen, setIsReferModalOpen] = useState(false);
@@ -33,22 +38,36 @@ export function Hero() {
         id="home"
         className="relative flex min-h-screen flex-col items-center justify-center px-6 pb-16 pt-32"
       >
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="w-full max-w-[1400px] text-center"
-        >
+        <div className="w-full max-w-[1400px] text-center">
           <h1 className={cn(TYPE.hero, "mx-auto mb-16 max-w-[1345px] md:mb-24")}>
-            {HERO.lines.map((line) => (
-              <span key={line.static} className="block">
+            {HERO.lines.map((line, lineIndex) => (
+              <motion.span
+                key={line.static}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut", delay: lineIndex * 0.2 }}
+                className="block"
+              >
                 {line.static}
-                {line.cycling ? ` ${line.cycling[0]}` : ""}
-              </span>
+                {line.cycling && (
+                  <>
+                    {" "}
+                    <CyclingWord
+                      words={line.cycling}
+                      offsetMs={lineIndex * CYCLE_OFFSET_MS}
+                    />
+                  </>
+                )}
+              </motion.span>
             ))}
           </h1>
 
-          <div className="flex flex-col items-center justify-center gap-8 font-body text-xl sm:flex-row sm:gap-16 md:text-[24px]">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.6 }}
+            className="flex flex-col items-center justify-center gap-8 font-body text-xl sm:flex-row sm:gap-16 md:text-[24px]"
+          >
             {HERO.links.map((link) => {
               const isExternal = link.href.startsWith("http");
 
@@ -65,8 +84,8 @@ export function Hero() {
                 </a>
               );
             })}
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
 
         {/* Scroll affordance — mobile */}
         <a
