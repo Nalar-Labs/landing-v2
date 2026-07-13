@@ -1,4 +1,4 @@
-import { Suspense, lazy, useState } from "react";
+import { Suspense, lazy, useRef, useState } from "react";
 import { cn, CONTAINER, SECTION, TYPE } from "../lib/layout";
 import { PORTFOLIO_ITEMS } from "../data/portfolio-items";
 import type { PortfolioItem } from "../data/portfolio";
@@ -19,10 +19,17 @@ export function Portfolio() {
   // unmounting on close would cut off the dialog's exit animation.
   const [hasOpened, setHasOpened] = useState(false);
   const reducedMotion = usePrefersReducedMotion();
+  const openerRef = useRef<HTMLElement | null>(null);
 
   if (PORTFOLIO_ITEMS.length === 0) return null;
 
   const openItem = (item: PortfolioItem) => {
+    // Captured here because a controlled dialog has no Radix trigger to
+    // restore focus to on close.
+    openerRef.current =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
     setHasOpened(true);
     setSelected(item);
   };
@@ -37,7 +44,11 @@ export function Portfolio() {
       />
       {hasOpened && (
         <Suspense fallback={null}>
-          <PortfolioModal item={selected} onClose={() => setSelected(null)} />
+          <PortfolioModal
+            item={selected}
+            onClose={() => setSelected(null)}
+            returnFocusTo={openerRef}
+          />
         </Suspense>
       )}
     </section>

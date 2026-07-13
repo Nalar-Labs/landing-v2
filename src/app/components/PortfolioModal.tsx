@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { type RefObject, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import {
   Dialog,
@@ -13,9 +13,15 @@ type PortfolioModalProps = {
   /** The modal is open while this is non-null. */
   item: PortfolioItem | null;
   onClose: () => void;
+  /** Element to restore focus to on close (no Radix trigger exists). */
+  returnFocusTo?: RefObject<HTMLElement | null>;
 };
 
-export function PortfolioModal({ item, onClose }: PortfolioModalProps) {
+export function PortfolioModal({
+  item,
+  onClose,
+  returnFocusTo,
+}: PortfolioModalProps) {
   // Radix keeps the dialog mounted ~200ms for its exit animation after
   // `open` flips false; keep rendering the last item so the shell doesn't
   // empty out mid-animation.
@@ -25,7 +31,15 @@ export function PortfolioModal({ item, onClose }: PortfolioModalProps) {
 
   return (
     <Dialog open={item !== null} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="w-[calc(100%-2rem)] gap-0 overflow-hidden rounded-card border-line p-0 sm:max-w-3xl">
+      <DialogContent
+        className="w-[calc(100%-2rem)] gap-0 overflow-hidden rounded-card border-line p-0 sm:max-w-3xl"
+        onCloseAutoFocus={(event) => {
+          if (returnFocusTo?.current) {
+            event.preventDefault();
+            returnFocusTo.current.focus();
+          }
+        }}
+      >
         {shown && (
           /* data-lenis-prevent: Lenis owns wheel events site-wide; without
              it the modal body cannot scroll independently of the page.
