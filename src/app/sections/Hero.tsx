@@ -42,7 +42,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: "easeOut", delay: 0.5 }}
-            className="mb-8 font-body text-xl tracking-[0.02em] md:mb-10 md:text-4xl"
+            className="mb-4 font-body text-xl tracking-[0.02em] md:mb-5 md:text-4xl"
           >
             Want to win with AI?
           </motion.p>

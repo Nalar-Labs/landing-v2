@@ -71,9 +71,9 @@ export function ServiceCard({
         )}
         <h4
           className={cn(
-            TYPE.cardTitle,
-            "relative z-10",
-            compact && "text-[20px] md:text-[20px]",
+            "font-display font-medium leading-tight tracking-[-0.96px]",
+            "text-[32px] md:text-[40px] relative z-10 mb-3",
+            compact && "text-[24px] md:text-[28px]",
           )}
         >
           {title}
@@ -81,9 +81,9 @@ export function ServiceCard({
         <motion.p
           style={reducedMotion ? undefined : { opacity: descriptionOpacity }}
           className={cn(
-            TYPE.body,
-            "relative z-10 text-ink-soft",
-            compact && "text-[16px] md:text-[16px] leading-snug",
+            "font-display font-light tracking-[-0.72px]",
+            "text-[20px] md:text-[28px] leading-tight relative z-10 text-ink-soft",
+            compact && "text-[16px] md:text-[18px] leading-snug",
           )}
         >
           {description}

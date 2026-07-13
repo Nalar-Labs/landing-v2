@@ -49,7 +49,7 @@ function ServicesInner({ isDesktop }: { isDesktop: boolean }) {
               : cn(TYPE.h2, SECTION.titleGap)
           }
         >
-          Key Services
+          We help you
         </h2>
 
         <div className={pin ? "space-y-8" : "space-y-16 md:space-y-24"}>
@@ -64,7 +64,7 @@ function ServicesInner({ isDesktop }: { isDesktop: boolean }) {
               >
                 {group.heading}
               </h3>
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-3 ">
                 {group.items.map((service, itemIndex) => (
                   <ServiceCard
                     key={service.title}

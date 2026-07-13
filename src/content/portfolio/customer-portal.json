@@ -3,6 +3,7 @@
   "client": "B2B distributor",
   "summary": "A customer-facing ordering portal architected to grow from hundreds to millions of requests.",
   "coverImage": "",
+  "logo": "",
   "tags": ["Product development", "External"],
   "order": 2,
   "draft": false,

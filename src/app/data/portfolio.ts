@@ -10,6 +10,8 @@ export type PortfolioItem = {
   summary: string;
   /** Path under public/, e.g. "/images/portfolio/foo.jpg". Cards render a gradient placeholder when absent. */
   coverImage?: string;
+  /** Path under public/, e.g. "/images/portfolio/logos/company.png". Displayed in top-left corner. */
+  logo?: string;
   tags: string[];
   /** Carousel position, ascending. */
   order: number;
@@ -74,6 +76,7 @@ export function parsePortfolioItems(raw: unknown[]): PortfolioItem[] {
       client: optionalString(record, "client"),
       summary: requireString(record, "summary"),
       coverImage: optionalString(record, "coverImage"),
+      logo: optionalString(record, "logo"),
       tags: tagsOf(record),
       order: orderOf(record),
       body: requireString(record, "body"),

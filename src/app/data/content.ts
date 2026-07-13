@@ -54,44 +54,44 @@ export type ServiceGroup = {
 
 export const SERVICE_GROUPS: ServiceGroup[] = [
   {
-    heading: "Consultation",
+    heading: "Think Better about Technology",
     items: [
       {
-        title: "AI Strategy & Implementation Roadmap",
+        title: "AI Transformation Roadmap",
         description:
-          "Plan where AI fits in your business, what to build, in what order, and how to measure success.",
+          "Afraid you’re missing out on the latest AI frontier? We help you identify opportunities, plan strategically, and build a realitic executable roadmap to transform your business.",
       },
       {
-        title: "Technical Cost Optimisation",
+        title: "User Research",
         description:
-          "Audit your current systems and recommend ways to reduce infrastructure, tooling, and operational costs.",
+          "Not sure of what to build? We can help build a deep understanding of your users through interviews, surveys, and usability testing. Ensuring you have insights to back your decisions.",
       },
       {
-        title: "Vibe-to-Production",
+        title: "TokenMax Training",
         description:
-          "Help you manage your prototype projects expectation into clean, production-ready applications.",
+          "Don't know what to do with all your AI tokens? We provide training to you and your organization to help you make the most of your AI capabilities and transform into an AI native company.",
         gradient: true,
       },
     ],
   },
   {
-    heading: "End-to-End Implementation",
+    heading: "Build the Best Technology for Your Business",
     items: [
       {
         title: "Internal Tool Building",
         description:
-          "Migrate your team off paid SaaS subscriptions and replace them with custom in-house tools you own.",
+          "Migrate your team off paid SaaS subscriptions and replace them with custom in-house tools you own. No more recurring fees for things you don't control.",
         gradient: true,
       },
       {
         title: "External Product Development",
         description:
-          "Build customer-facing products architected to scale to millions of users.",
+          "Build customer-facing products architected to scale to millions of users. We ensure robust architecture, seamless user experience, and maintainable code to support your growth.",
       },
       {
-        title: "Agentic Deployment",
+        title: "Offline/Online Agent Deployment",
         description:
-          "Design and deploy AI agents that automate workflows across your business.",
+          "Design and deploy AI agents that automate workflows across your business. We can help you train offline models that protect your data and sovereignty",
       },
     ],
   },
@@ -108,23 +108,24 @@ export type ApproachStep = {
 export const APPROACH_STEPS: ApproachStep[] = [
   {
     title: "Discovery & scoping,",
-    subtitle: "Technology is the answer but what was the question?",
+    subtitle: "It all starts with a (free) 30-minute call.",
     steps: [
-      "Intro call — problem discovery, fit assessment (Free)",
-      "Solution presentation — we come back with a recommended approach and rough scope (may be paid)",
-      "Project planning session — detailed scope, timeline, and contract (Paid)",
+      "Click on this link right here",
+      "If your problem isn't solved by step 1, we'll come back with a recommended approach",
+      "Once you're impressed with our plan, we'll discuss how to work together",
     ],
   },
   {
-    title: "Execution, answering the question to life",
+    title: "Execution, Execution, Execution",
     paragraph:
-      "We design and build in focused sprints with regular check-ins. All deliverables are documented, versioned, and handed over — nothing lives only in our heads or on our machines. We use open tools wherever possible so you're never dependent on a proprietary stack we control.",
+      "We design and build in focused sprints with regular check-ins. All deliverables are documented, versioned, and handed over. We use open tools wherever possible so you're never dependent on a proprietary stack we control.",
   },
   {
     title:
-      "Training and hand off, good product is something that can be understood",
+      "Training and hand off", 
+    subtitle: "Unlike other vendors, we don't want to lock you in",
     paragraph:
-      "Every engagement ends with a structured training phase. We document what was built, run hands-on sessions with your team, and create internal guides so your people can maintain and extend the work without us. Optional ongoing retainer for continued support.",
+      "We believe the world would be a better place if everyone had the ability to build things on their own. That's why we want to make sure even when we're gone, you and you're team will be able to continue building.",
   },
 ];
 

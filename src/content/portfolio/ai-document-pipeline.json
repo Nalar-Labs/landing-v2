@@ -3,6 +3,7 @@
   "client": "Professional services firm",
   "summary": "An agentic pipeline that classifies, extracts, and files inbound documents automatically.",
   "coverImage": "",
+  "logo": "",
   "tags": ["AI", "Automation"],
   "order": 1,
   "draft": false,

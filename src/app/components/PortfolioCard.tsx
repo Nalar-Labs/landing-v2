@@ -13,11 +13,20 @@ export function PortfolioCard({ item, onOpen }: PortfolioCardProps) {
       type="button"
       onClick={onOpen}
       className={cn(
-        "flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-card bg-surface text-left",
+        "relative flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-card bg-surface text-left",
         "transition-transform duration-300 ease-out hover:-translate-y-1",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand",
       )}
     >
+      {item.logo && (
+        <div className="absolute top-4 left-4 z-20">
+          <img
+            src={item.logo}
+            alt={item.client || item.title}
+            className="h-8 w-auto object-contain"
+          />
+        </div>
+      )}
       {item.coverImage ? (
         <img
           src={item.coverImage}

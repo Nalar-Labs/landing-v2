@@ -22,6 +22,7 @@ collections:
       - { name: client, label: Client, widget: string, required: false }
       - { name: summary, label: Summary, widget: text, hint: "One sentence shown on the card and at the top of the popup." }
       - { name: coverImage, label: Cover image, widget: image, required: false }
+      - { name: logo, label: Company logo, widget: image, required: false, hint: "Logo displayed in top-left corner of card" }
       - { name: tags, label: Tags, widget: list, required: false, default: [] }
       - { name: order, label: Order, widget: number, value_type: int, default: 0, hint: "Carousel position, lowest first. Keep unique." }
       - { name: draft, label: Draft, widget: boolean, default: false, hint: "Drafts are hidden from the site." }
