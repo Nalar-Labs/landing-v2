@@ -7,13 +7,6 @@
 export const SERVICE_CARD_COUNT = 6;
 
 /**
- * Progress (0-1) at which the 3rd card (index 2, "Vibe-to-Production")
- * reaches full intensity — the moment all 3 Consultation cards have been
- * sequentially highlighted. Reused as the heading-swap threshold.
- */
-export const HEADING_SWAP_PROGRESS = 2.5 / SERVICE_CARD_COUNT;
-
-/**
  * Returns 0-1: how "inflated" the card at `index` should be at the given
  * overall scroll `progress`. Each card owns an equal band of the 0-1 range
  * and ramps linearly up to 1 at the band's midpoint, then back down to 0 —
@@ -43,15 +36,4 @@ export function getCardIntensity(
   // Round to 1 if very close due to floating-point precision
   if (Math.abs(result - 1) < 1e-10) return 1;
   return result;
-}
-
-/**
- * The Services group heading swaps from "Consultation" to "Implementation"
- * once the 3rd card has fully highlighted, and reverts if the user scrolls
- * back above that point.
- */
-export function getServicesHeadingLabel(
-  progress: number,
-): "Consultation" | "Implementation" {
-  return progress >= HEADING_SWAP_PROGRESS ? "Implementation" : "Consultation";
 }

@@ -29,13 +29,10 @@ export const HERO = {
   lines: [
     {
       static: "You don't need expensive",
-      cycling: ["tools", "SaaS", "paid software"],
+      cycling: ["SaaS", "AI Tools", "developers", "consultants"],
     },
-    {
-      static: "You don't need to hire",
-      cycling: ["consultants", "developers", "designers", "marketers"],
-    },
-    { static: "You just need the right partners for your business." },
+
+    { static: "You just need really good technical partners." },
   ],
   links: [
     { label: "Book a call", href: CALENDLY_URL },
@@ -103,7 +100,6 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
 export type ApproachStep = {
   title: string;
   subtitle?: string;
-  active?: boolean;
   /** Numbered list body (mutually exclusive with `paragraph`). */
   steps?: string[];
   paragraph?: string;
@@ -113,7 +109,6 @@ export const APPROACH_STEPS: ApproachStep[] = [
   {
     title: "Discovery & scoping,",
     subtitle: "Technology is the answer but what was the question?",
-    active: true,
     steps: [
       "Intro call — problem discovery, fit assessment (Free)",
       "Solution presentation — we come back with a recommended approach and rough scope (may be paid)",

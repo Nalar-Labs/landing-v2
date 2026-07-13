@@ -1,7 +1,6 @@
 // src/app/sections/Hero.tsx
 import { useMemo, useState, type MouseEvent } from "react";
 import { motion } from "motion/react";
-import { ArrowRight } from "lucide-react";
 import { cn, TYPE } from "../lib/layout";
 import { CALENDLY_URL, HERO } from "../data/content";
 import { CyclingWord } from "../components/CyclingWord";
@@ -55,6 +54,7 @@ export function Hero() {
                     <CyclingWord
                       words={line.cycling}
                       offsetMs={lineIndex * CYCLE_OFFSET_MS}
+                      className="border-b-[3px] border-ink md:border-b-4"
                     />
                   </>
                 )}
@@ -66,7 +66,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.6 }}
-            className="flex flex-col items-center justify-center gap-8 font-body text-xl sm:flex-row sm:gap-16 md:text-[24px]"
+            className="flex flex-col items-center justify-center gap-4 font-body text-xl sm:flex-row sm:gap-6 md:text-[24px]"
           >
             {HERO.links.map((link) => {
               const isExternal = link.href.startsWith("http");
@@ -78,7 +78,7 @@ export function Hero() {
                   onClick={handleLinkClick(link.href)}
                   target={isExternal ? "_blank" : undefined}
                   rel={isExternal ? "noreferrer" : undefined}
-                  className="transition-opacity hover:opacity-60"
+                  className="rounded-full border border-line bg-white px-8 py-4 transition-colors hover:border-ink"
                 >
                   {link.label}
                 </a>
@@ -87,14 +87,7 @@ export function Hero() {
           </motion.div>
         </div>
 
-        {/* Scroll affordance — mobile */}
-        <a
-          href="#services"
-          className="absolute bottom-8 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full bg-ink-soft px-5 py-2 text-sm font-light text-white md:hidden"
-        >
-          Explore Nalar
-          <ArrowRight className="size-4" />
-        </a>
+      
       </section>
 
       {isReferModalOpen && (

@@ -1,43 +1,37 @@
 // src/app/data/content.test.ts
+// Structural guards only — marketing copy is free to change without
+// breaking tests, but the shapes the components rely on must hold.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { HERO, SERVICE_GROUPS } from "./content.ts";
+import { HERO, SERVICE_GROUPS, APPROACH_STEPS } from "./content.ts";
 import { SERVICE_CARD_COUNT } from "../lib/service-scroll-sequence.ts";
 
-test("hero has exactly three lines", () => {
-  assert.equal(HERO.lines.length, 3);
+test("hero has at least one line and every line has non-empty static copy", () => {
+  assert.ok(HERO.lines.length >= 1);
+  for (const line of HERO.lines) {
+    assert.ok(line.static.trim().length > 0);
+  }
 });
 
-test("line 1 copy and cycling words match the spec", () => {
-  assert.equal(HERO.lines[0].static, "You don't need expensive");
-  assert.deepEqual(HERO.lines[0].cycling, ["tools", "SaaS", "paid software"]);
-});
-
-test("line 2 copy and cycling words match the spec", () => {
-  assert.equal(HERO.lines[1].static, "You don't need to hire");
-  assert.deepEqual(HERO.lines[1].cycling, [
-    "consultants",
-    "developers",
-    "designers",
-    "marketers",
-  ]);
-});
-
-test("line 3 is fully static (no cycling list)", () => {
-  assert.equal(
-    HERO.lines[2].static,
-    "You just need the right partners for your business.",
-  );
-  assert.equal(HERO.lines[2].cycling, undefined);
+test("at least one hero line cycles (the animated headline needs a cycling slot)", () => {
+  assert.ok(HERO.lines.some((line) => "cycling" in line && line.cycling));
 });
 
 test("every cycling list has at least two words (a 1-word loop would look broken)", () => {
   for (const line of HERO.lines) {
-    if (line.cycling) assert.ok(line.cycling.length >= 2);
+    if ("cycling" in line && line.cycling) assert.ok(line.cycling.length >= 2);
   }
 });
 
 test("SERVICE_CARD_COUNT matches the actual number of services in content", () => {
   const actual = SERVICE_GROUPS.reduce((n, g) => n + g.items.length, 0);
   assert.equal(actual, SERVICE_CARD_COUNT);
+});
+
+test("approach steps exist and each has a body (steps list or paragraph)", () => {
+  assert.ok(APPROACH_STEPS.length >= 2);
+  for (const step of APPROACH_STEPS) {
+    assert.ok(step.title.trim().length > 0);
+    assert.ok((step.steps?.length ?? 0) > 0 || (step.paragraph?.length ?? 0) > 0);
+  }
 });

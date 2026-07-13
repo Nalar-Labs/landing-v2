@@ -1,10 +1,11 @@
-import { useRef, useState } from "react";
-import { useMotionValueEvent, useScroll } from "motion/react";
+import { useRef } from "react";
+import { useScroll } from "motion/react";
 import { cn, CONTAINER, SECTION, TYPE } from "../lib/layout";
 import { SERVICE_GROUPS } from "../data/content";
 import { ServiceCard } from "../components/ServiceCard";
-import { SERVICE_CARD_COUNT, getServicesHeadingLabel } from "../lib/service-scroll-sequence";
+import { SERVICE_CARD_COUNT } from "../lib/service-scroll-sequence";
 import { usePrefersReducedMotion } from "../lib/use-reduced-motion";
+import { useMediaQuery } from "../lib/use-media-query";
 
 // Global card index (0-5) each group's items start at, in render order.
 const GROUP_INDEX_OFFSETS = SERVICE_GROUPS.reduce<number[]>((offsets, group, i) => {
@@ -13,34 +14,56 @@ const GROUP_INDEX_OFFSETS = SERVICE_GROUPS.reduce<number[]>((offsets, group, i) 
 }, []);
 
 export function Services() {
-  const sectionRef = useRef<HTMLElement>(null);
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+  // Remount on breakpoint change so useScroll re-registers with the right
+  // offsets — motion doesn't retarget an existing scroll tracker.
+  return <ServicesInner key={isDesktop ? "pinned" : "flowing"} isDesktop={isDesktop} />;
+}
+
+function ServicesInner({ isDesktop }: { isDesktop: boolean }) {
+  const trackRef = useRef<HTMLElement>(null);
   const reducedMotion = usePrefersReducedMotion();
-  const [headingLabel, setHeadingLabel] = useState<"Consultation" | "Implementation">(
-    "Consultation",
-  );
+
+  // Desktop pins the section: the tall track scrolls beneath a sticky,
+  // viewport-height panel while progress drives the cards 1→6, then the
+  // page releases. Mobile (and reduced motion) keeps normal flow.
+  const pin = isDesktop && !reducedMotion;
 
   const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
-
-  useMotionValueEvent(scrollYProgress, "change", (progress) => {
-    if (reducedMotion) return;
-    setHeadingLabel(getServicesHeadingLabel(progress));
+    target: trackRef,
+    offset: pin ? ["start start", "end end"] : ["start end", "end start"],
   });
 
   return (
-    <section id="services" ref={sectionRef} className={cn(CONTAINER, SECTION.wrap)}>
-      <h2 className={cn(TYPE.h2, SECTION.titleGap)}>Key Services</h2>
+    <section
+      id="services"
+      ref={trackRef}
+      className={cn(CONTAINER, pin ? "h-[350vh]" : SECTION.wrap)}
+    >
+      {/* pt-24 clears the fixed navbar while pinned */}
+      <div className={pin ? "sticky top-0 flex h-screen flex-col justify-center pt-24" : undefined}>
+        <h2
+          className={
+            pin
+              ? "font-display text-[64px] font-light leading-[1.05] tracking-[-1.92px] mb-8"
+              : cn(TYPE.h2, SECTION.titleGap)
+          }
+        >
+          Key Services
+        </h2>
 
-      <div className="space-y-16 md:space-y-24">
-        {SERVICE_GROUPS.map((group, groupIndex) => {
-          const displayHeading =
-            group.heading === "Consultation" ? headingLabel : group.heading;
-
-          return (
+        <div className={pin ? "space-y-8" : "space-y-16 md:space-y-24"}>
+          {SERVICE_GROUPS.map((group, groupIndex) => (
             <div key={group.heading}>
-              <h3 className={cn(TYPE.h3, "mb-10 md:mb-12")}>{displayHeading}</h3>
+              <h3
+                className={
+                  pin
+                    ? "font-display text-[32px] font-light leading-[1.05] tracking-[-0.96px] mb-4"
+                    : cn(TYPE.h3, "mb-10 md:mb-12")
+                }
+              >
+                {group.heading}
+              </h3>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                 {group.items.map((service, itemIndex) => (
                   <ServiceCard
@@ -50,12 +73,13 @@ export function Services() {
                     cardCount={SERVICE_CARD_COUNT}
                     scrollYProgress={scrollYProgress}
                     reducedMotion={reducedMotion}
+                    compact={pin}
                   />
                 ))}
               </div>
             </div>
-          );
-        })}
+          ))}
+        </div>
       </div>
     </section>
   );
