@@ -1,0 +1,10 @@
+{
+  "title": "Internal Ops Dashboard",
+  "client": "Logistics company",
+  "summary": "Replaced three SaaS subscriptions with one custom dashboard the team fully owns.",
+  "coverImage": "",
+  "tags": ["Internal tools", "React", "Cost reduction"],
+  "order": 0,
+  "draft": false,
+  "body": "## The problem\n\nThe operations team was paying for three overlapping SaaS tools — one for tracking, one for reporting, one for scheduling — and still stitching the gaps together in spreadsheets.\n\n## What we built\n\nA single internal dashboard that pulls from the same data sources, tailored to the team's actual workflow instead of a vendor's idea of it.\n\n- Live shipment tracking board\n- One-click weekly reports\n- Role-based access for warehouse and office staff\n\n## Outcome\n\nThe three subscriptions were cancelled within a quarter, and the tool now runs on infrastructure the client controls."
+}
