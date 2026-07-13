@@ -32,7 +32,11 @@ export function PortfolioCarousel({
       </div>
 
       {/* Instagram-style dots: plain buttons driven by useGlide state. */}
-      <div className="mt-10 flex justify-center gap-3">
+      <div
+        className="mt-10 flex justify-center gap-3"
+        role="group"
+        aria-label="Portfolio slides"
+      >
         {items.map((item, index) => (
           <button
             key={item.title}

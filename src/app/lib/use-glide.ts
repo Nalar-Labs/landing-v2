@@ -10,6 +10,9 @@ export function useGlide(slideCount: number, reducedMotion: boolean) {
   const rootRef = useRef<HTMLDivElement>(null);
   const glideRef = useRef<Glide | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  // Mirrors activeIndex for the effect below without listing it as a dep
+  // (a dep would tear down and rebuild Glide on every slide change).
+  const activeIndexRef = useRef(0);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -17,6 +20,9 @@ export function useGlide(slideCount: number, reducedMotion: boolean) {
 
     const glide = new Glide(root, {
       type: "carousel",
+      // Re-created when reducedMotion changes; resume at the slide the user
+      // was on, clamped in case the slide count shrank.
+      startAt: Math.min(activeIndexRef.current, slideCount - 1),
       perView: 3,
       gap: 24,
       // Glide's keyboard module listens document-wide and would hijack
@@ -29,8 +35,14 @@ export function useGlide(slideCount: number, reducedMotion: boolean) {
       },
     });
 
-    glide.on("run", () => setActiveIndex(glide.index));
+    glide.on("run", () => {
+      activeIndexRef.current = glide.index;
+      setActiveIndex(glide.index);
+    });
     glide.mount();
+    // Sync React state with where the new instance actually started.
+    activeIndexRef.current = glide.index;
+    setActiveIndex(glide.index);
     glideRef.current = glide;
 
     return () => {
