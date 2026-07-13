@@ -58,6 +58,18 @@ export function CyclingWord({ words, offsetMs = 0, className }: CyclingWordProps
         className,
       )}
     >
+      {/* Invisible copies of every word stacked in the same cell so the
+          container always reserves the widest word's width — prevents the
+          line re-wrapping (and the hero jumping vertically) as words cycle. */}
+      {words.map((word) => (
+        <span
+          key={word}
+          aria-hidden="true"
+          className="invisible col-start-1 row-start-1 whitespace-nowrap"
+        >
+          {word}
+        </span>
+      ))}
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.span
           key={words[index]}
