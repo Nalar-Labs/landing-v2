@@ -107,18 +107,19 @@ export type ApproachStep = {
 
 export const APPROACH_STEPS: ApproachStep[] = [
   {
-    title: "Discovery & scoping,",
+    title: "Discovery & Scoping,",
     subtitle: "It all starts with a (free) 30-minute call.",
     steps: [
-      "Click on this link right here",
-      "If your problem isn't solved by step 1, we'll come back with a recommended approach",
-      "Once you're impressed with our plan, we'll discuss how to work together",
+      "Click on this link right here and let's have a call",
+      "If your problem isn't solved by step 1, we'll come back with a plan",
+      "Once you're impressed with our plan, we'll write-up a detailed proposal and get to work!",
     ],
   },
   {
-    title: "Execution, Execution, Execution",
+    title: "On Loop: Talk, Build, Test.",
+    subtitle: "Until: Satisfied.",
     paragraph:
-      "We design and build in focused sprints with regular check-ins. All deliverables are documented, versioned, and handed over. We use open tools wherever possible so you're never dependent on a proprietary stack we control.",
+      "We design and build in focused sprints with regular online/offline check-ins. All deliverables are documented, versioned, and handed over. We use open tools wherever possible so you're never dependent on a proprietary stack we control.",
   },
   {
     title:
