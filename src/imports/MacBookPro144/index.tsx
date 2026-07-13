@@ -19,7 +19,7 @@ export default function MacBookPro() {
     <div className="bg-white relative size-full" data-name="MacBook Pro 14' - 4">
       <p className="[word-break:break-word] absolute font-['Public_Sans:Light',sans-serif] font-light leading-[normal] left-[37px] text-[40px] text-black top-[30px] tracking-[-1.2px] whitespace-nowrap">Nalar</p>
       <Group />
-      <p className="-translate-x-1/2 [word-break:break-word] absolute font-['Public_Sans:Light',sans-serif] font-light leading-[normal] left-[calc(50%-0.5px)] text-[96px] text-black text-center top-[287px] tracking-[-2.88px] w-[1345px]">Nalar Labs is an external Authentic Intelligences helping you implement the Artificial one</p>
+      <p className="-translate-x-1/2 [word-break:break-word] absolute font-['Public_Sans:Light',sans-serif] font-light leading-[normal] left-[calc(50%-0.5px)] text-[96px] text-black text-center top-[287px] tracking-[-2.88px] w-[1345px]">Nalar Labs is a World Class firm of AI-native professionals helping you Implement AI strategy, bespoke software, and agentic deployment.</p>
       <p className="[word-break:break-word] absolute font-['Inter:Regular',sans-serif] font-normal leading-[normal] left-[530px] not-italic text-[24px] text-black top-[748px] whitespace-nowrap">Book a call</p>
       <p className="[word-break:break-word] absolute font-['Inter:Regular',sans-serif] font-normal leading-[normal] left-[756px] not-italic text-[24px] text-black top-[748px] whitespace-nowrap">Refer someone-else</p>
     </div>
