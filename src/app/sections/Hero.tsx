@@ -1,5 +1,6 @@
 // src/app/sections/Hero.tsx
 import { useMemo, useState, type MouseEvent } from "react";
+import { ArrowRight, Paperclip } from "lucide-react";
 import { motion } from "motion/react";
 import { cn, TYPE } from "../lib/layout";
 import { CALENDLY_URL, HERO } from "../data/content";
@@ -37,8 +38,16 @@ export function Hero() {
         id="home"
         className="relative flex min-h-screen flex-col items-center justify-center px-6 pb-16 pt-32"
       >
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut", delay: 0.5 }}
+            className="mb-8 font-body text-xl tracking-[0.02em] md:mb-10 md:text-4xl"
+          >
+            Want to win with AI?
+          </motion.p>
         <div className="w-full max-w-[1400px] text-center">
-          <h1 className={cn(TYPE.hero, "mx-auto mb-16 max-w-[1345px] md:mb-24")}>
+          <h1 className={cn(TYPE.hero, "mx-auto mb-10 max-w-[1345px] md:mb-12")}>
             {HERO.lines.map((line, lineIndex) => (
               <motion.span
                 key={line.static}
@@ -70,6 +79,7 @@ export function Hero() {
           >
             {HERO.links.map((link) => {
               const isExternal = link.href.startsWith("http");
+              const isRefer = link.href === "#refer";
 
               return (
                 <a
@@ -78,9 +88,12 @@ export function Hero() {
                   onClick={handleLinkClick(link.href)}
                   target={isExternal ? "_blank" : undefined}
                   rel={isExternal ? "noreferrer" : undefined}
-                  className="rounded-full border border-line bg-white px-8 py-4 transition-colors hover:border-ink"
+                  className="group inline-flex items-center gap-3 rounded-full border border-black/45 bg-white px-8 py-4 transition-colors hover:border-black"
                 >
-                  {link.label}
+                  <span>{link.label}</span>
+                  <span className="flex size-8 items-center justify-center rounded-full bg-black text-white transition-transform group-hover:scale-105">
+                    {isRefer ? <Paperclip className="size-4" /> : <ArrowRight className="size-4" />}
+                  </span>
                 </a>
               );
             })}
