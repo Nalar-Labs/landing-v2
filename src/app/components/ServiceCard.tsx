@@ -13,18 +13,28 @@ type ServiceCardProps = Service & {
   reducedMotion: boolean;
   /** Tighter layout while the section is pinned on desktop. */
   compact?: boolean;
+  /**
+   * Whether this card should track scroll progress at all. False on mobile
+   * (and anywhere the section isn't pinned) so the card just renders fully
+   * expanded and static instead of collapsing/expanding as the page scrolls.
+   */
+  scrollDriven?: boolean;
 };
 
 /**
  * Collapsed, a card is just its title bar. As its slice of scroll progress
- * arrives it grows UPWARD (the card is bottom-anchored inside a fixed-height
- * cell, so the top edge rises and nothing else on the page reflows), the
- * grey wash fades in, and the description appears — then it stays expanded
- * for the rest of the scroll.
+ * arrives it grows from the MIDDLE (the card is center-anchored inside a
+ * fixed-height cell, so the top edge rises and the bottom edge drops evenly
+ * and nothing else on the page reflows), the grey wash fades in, and the
+ * description appears — then it stays expanded for the rest of the scroll.
+ *
+ * This scroll-linked expand/collapse only happens while `scrollDriven` is
+ * true (the pinned desktop layout). Everywhere else — mobile, and reduced
+ * motion — the card just renders fully expanded and static.
  */
 const CARD_HEIGHTS = {
-  compact: { collapsed: 112, expanded: 210 },
-  regular: { collapsed: 128, expanded: 300 },
+  compact: { collapsed: 128, expanded: 300 },
+  regular: { collapsed: 128, expanded: 390 },
 } as const;
 
 export function ServiceCard({
@@ -36,8 +46,10 @@ export function ServiceCard({
   scrollYProgress,
   reducedMotion,
   compact = false,
+  scrollDriven = true,
 }: ServiceCardProps) {
   const { collapsed, expanded } = CARD_HEIGHTS[compact ? "compact" : "regular"];
+  const staticLayout = reducedMotion || !scrollDriven;
 
   const expansion = useTransform(scrollYProgress, (progress) =>
     getCardExpansion(progress, index, cardCount),
@@ -48,21 +60,21 @@ export function ServiceCard({
   const descriptionOpacity = useTransform(expansion, [0.6, 1], [0, 1]);
 
   return (
-    <div style={{ height: expanded }} className="flex items-end">
+    <div style={{ height: expanded }} className="flex items-top">
       <motion.div
-        style={reducedMotion ? undefined : { height }}
+        style={staticLayout ? undefined : { height }}
         whileHover={{ y: -4 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
         className={cn(
           "relative flex w-full flex-col justify-between overflow-hidden rounded-card",
-          reducedMotion && "h-full",
+          staticLayout && "h-full",
           compact ? "p-6" : "p-8 md:p-[30px]",
           gradient
             ? "bg-surface bg-gradient-to-r from-[#3c3c3c33] to-[#ffffff33]"
             : "bg-surface",
         )}
       >
-        {!reducedMotion && (
+        {!staticLayout && (
           <motion.div
             aria-hidden="true"
             style={{ opacity: washOpacity, backgroundImage: SERVICE_CARD_GRADIENTS[index] }}
@@ -79,7 +91,7 @@ export function ServiceCard({
           {title}
         </h4>
         <motion.p
-          style={reducedMotion ? undefined : { opacity: descriptionOpacity }}
+          style={staticLayout ? undefined : { opacity: descriptionOpacity }}
           className={cn(
             "font-display font-light tracking-[-0.72px]",
             "text-[20px] md:text-[28px] leading-tight relative z-10 text-ink-soft",
