@@ -32,7 +32,7 @@ export const HERO = {
       cycling: ["SaaS", "Tokens", "Tools", "Developers", "Consultants", "Designers"],
     },
 
-    { static: "Just partners who can build better & move faster." },
+    { static: "You just need partners who have built great products." },
   ],
   links: [
     { label: "Book a call", href: CALENDLY_URL },
