@@ -57,7 +57,7 @@ function ServicesInner({ isDesktop }: { isDesktop: boolean }) {
       className={cn(CONTAINER, pin ? "h-[520vh]" : SECTION.wrap)}
     >
       {/* pt-24 clears the fixed navbar while pinned */}
-      <div className={pin ? "sticky top-0 flex h-screen flex-col justify-center pt-24" : undefined}>
+      <div className={pin ? "sticky top-0 flex h-screen flex-col pt-60" : undefined}>
         <h2
           className={
             pin
@@ -76,7 +76,7 @@ function ServicesInner({ isDesktop }: { isDesktop: boolean }) {
                   style={pin ? { opacity: headingOpacities[groupIndex] } : undefined}
                   className={
                     pin
-                      ? "font-display text-[32px] font-light leading-[1.05] tracking-[-0.96px] mb-4"
+                      ? "font-display text-[32px] font-light leading-[1.05] tracking-[-0.96px] mb-12"
                       : cn(TYPE.h3, "mb-10 md:mb-12")
                   }
                 >
@@ -95,6 +95,7 @@ function ServicesInner({ isDesktop }: { isDesktop: boolean }) {
                       scrollYProgress={scrollYProgress}
                       reducedMotion={reducedMotion}
                       compact={pin}
+                      scrollDriven={pin} 
                     />
                   ))}
                 </motion.div>
