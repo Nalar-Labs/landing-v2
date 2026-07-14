@@ -8,7 +8,7 @@
     "AI",
     "Automation"
   ],
-  "order": 1,
+  "order": 0,
   "draft": false,
   "body": "## The problem\n\nHundreds of inbound PDFs a week were being read, renamed, and filed by hand.\n\n## What we built\n\nA document pipeline with an LLM-based classification and extraction step, human review for low-confidence cases, and automatic filing into the existing document store.\n\n## Outcome\n\nManual handling dropped to the review queue only, with a full audit trail for every automated decision."
 }
