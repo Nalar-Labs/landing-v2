@@ -84,7 +84,7 @@ function ServicesInner({ isDesktop }: { isDesktop: boolean }) {
                 </motion.h3>
                 <motion.div
                   style={pin ? { opacity: cardsOpacities[groupIndex] } : undefined}
-                  className="grid grid-cols-1 gap-6 md:grid-cols-3 "
+                  className="grid grid-cols-1 gap-6 md:grid-cols-3 auto-rows-fr"
                 >
                   {group.items.map((service, itemIndex) => (
                     <ServiceCard

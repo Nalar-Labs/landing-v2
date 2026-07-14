@@ -42,6 +42,7 @@ export const HERO = {
 
 export type Service = {
   title: string;
+  hook: string;
   description: string;
   /** Renders the subtle gradient accent surface. */
   gradient?: boolean;
@@ -57,19 +58,22 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
     heading: "Think Better about Tech",
     items: [
       {
-        title: "AI Transformation Roadmap",
+        title: "AI Transformation",
+        hook: "Feeling AI Fomo?",
         description:
-          "Afraid you’re missing out on the latest AI frontier? We help you identify opportunities, plan strategically, and build a realitic executable roadmap to transform your business.",
+          "We help you identify opportunities, plan strategically, and build a realistic roadmap to transform your business.",
       },
       {
         title: "User Research",
+        hook: "Not sure what to build?",
         description:
-          "Not sure of what to build? We can help build a deep understanding of your users through interviews, surveys, and usability testing. Ensuring you have insights to back your decisions.",
+          "We can help build a deep understanding of your users through interviews, surveys, and usability testing to back your decisions.",
       },
       {
-        title: "TokenMax Training",
+        title: "AI Optimization",
+        hook: "Bunt through your tokens?",
         description:
-          "Don't know what to do with all your AI tokens? We provide training to you and your organization to help you make the most of your AI capabilities and transform into an AI native company.",
+          "We provide training to you and your organization to help you make the most of your AI capabilities and transform into an AI native company.",
         gradient: true,
       },
     ],
@@ -79,19 +83,22 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
     items: [
       {
         title: "Internal Tool Building",
+        hook: "Paying too much for SaaS?",
         description:
-          "Migrate your team off paid SaaS subscriptions and replace them with custom in-house tools you own. No more recurring fees for things you don't control.",
+          "Migrate your team off paid SaaS subscriptions. Replacethem with custom in-house tools you own. No more recurring fees for things you don't control.",
         gradient: true,
       },
       {
         title: "External Product Development",
+        hook: "Is your vibe-coded app production ready?",
         description:
-          "Build customer-facing products architected to scale to millions of users. We ensure robust architecture, seamless user experience, and maintainable code to support your growth.",
+          "We can build apps with robust architecture, seamless user experience, and maintainable code to support your growth to millions of users.",
       },
       {
         title: "Offline/Online Agent Deployment",
+        hook: "Want to build your own agent?",
         description:
-          "Design and deploy AI agents that automate workflows across your business. We can help you train offline models that protect your data and sovereignty",
+          "We can help you train offline models that protect your data and sovereignty across your business.",
       },
     ],
   },

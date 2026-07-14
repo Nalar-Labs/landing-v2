@@ -33,12 +33,13 @@ type ServiceCardProps = Service & {
  * motion — the card just renders fully expanded and static.
  */
 const CARD_HEIGHTS = {
-  compact: { collapsed: 128, expanded: 200 },
-  regular: { collapsed: 128, expanded: 290 },
+  compact: { collapsed: 128, expanded: 250 },
+  regular: { collapsed: 128, expanded: 340 },
 } as const;
 
 export function ServiceCard({
   title,
+  hook,
   description,
   gradient = false,
   index,
@@ -94,8 +95,18 @@ export function ServiceCard({
         <motion.p
           style={staticLayout ? undefined : { opacity: descriptionOpacity }}
           className={cn(
+            "font-display font-semibold tracking-[-0.72px]",
+            "text-[22px] md:text-[32px] leading-tight relative z-10 text-ink",
+            compact && "text-[18px] md:text-[20px] leading-snug",
+          )}
+        >
+          {hook}
+        </motion.p>
+        <motion.p
+          style={staticLayout ? undefined : { opacity: descriptionOpacity }}
+          className={cn(
             "font-display font-light tracking-[-0.72px]",
-            "text-[20px] md:text-[28px] leading-tight relative z-10 text-ink-soft",
+            "text-[18px] md:text-[24px] leading-tight relative z-10 text-ink-soft",
             compact && "text-[16px] md:text-[18px] leading-snug",
           )}
         >
