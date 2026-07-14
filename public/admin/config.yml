@@ -2,6 +2,7 @@ backend:
   name: github
   repo: Nalar-Labs/landing-v2
   branch: main
+  base_url: https://nalar-sveltia-cms-auth.garda4199.workers.dev
 
 # Uploaded images land in the repo and are served by Vite from /images/...
 media_folder: public/images/portfolio

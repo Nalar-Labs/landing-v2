@@ -33,8 +33,8 @@ type ServiceCardProps = Service & {
  * motion — the card just renders fully expanded and static.
  */
 const CARD_HEIGHTS = {
-  compact: { collapsed: 128, expanded: 300 },
-  regular: { collapsed: 128, expanded: 390 },
+  compact: { collapsed: 128, expanded: 200 },
+  regular: { collapsed: 128, expanded: 290 },
 } as const;
 
 export function ServiceCard({
@@ -60,14 +60,14 @@ export function ServiceCard({
   const descriptionOpacity = useTransform(expansion, [0.6, 1], [0, 1]);
 
   return (
-    <div style={{ height: expanded }} className="flex items-top">
+    <div style={staticLayout ? undefined : { height: expanded }} className="flex items-top">
       <motion.div
         style={staticLayout ? undefined : { height }}
         whileHover={{ y: -4 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
         className={cn(
-          "relative flex w-full flex-col justify-between overflow-hidden rounded-card",
-          staticLayout && "h-full",
+          "relative flex w-full flex-col overflow-hidden rounded-card",
+          staticLayout ? "gap-4" : "justify-between h-full",
           compact ? "p-6" : "p-8 md:p-[30px]",
           gradient
             ? "bg-surface bg-gradient-to-r from-[#3c3c3c33] to-[#ffffff33]"
@@ -84,7 +84,8 @@ export function ServiceCard({
         <h4
           className={cn(
             "font-display font-medium leading-tight tracking-[-0.96px]",
-            "text-[32px] md:text-[40px] relative z-10 mb-3",
+            "text-[32px] md:text-[40px] relative z-10",
+            !staticLayout && "mb-3",
             compact && "text-[24px] md:text-[28px]",
           )}
         >

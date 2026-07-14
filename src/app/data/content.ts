@@ -28,11 +28,11 @@ export type HeroLine = {
 export const HERO = {
   lines: [
     {
-      static: "You don't need expensive",
-      cycling: ["SaaS", "AI Tools", "developers", "consultants"],
+      static: "You don't need more",
+      cycling: ["SaaS", "Tokens", "Tools", "Developers", "Consultants", "Designers"],
     },
 
-    { static: "You just need really good technical partners." },
+    { static: "Just partners who can build better & move faster." },
   ],
   links: [
     { label: "Book a call", href: CALENDLY_URL },
@@ -54,7 +54,7 @@ export type ServiceGroup = {
 
 export const SERVICE_GROUPS: ServiceGroup[] = [
   {
-    heading: "Think Better about Technology",
+    heading: "Think Better about Tech",
     items: [
       {
         title: "AI Transformation Roadmap",
@@ -75,7 +75,7 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
     ],
   },
   {
-    heading: "Build the Best Technology for Your Business",
+    heading: "Build What's Best for Your Business",
     items: [
       {
         title: "Internal Tool Building",
