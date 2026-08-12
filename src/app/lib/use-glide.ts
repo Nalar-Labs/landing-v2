@@ -30,6 +30,11 @@ export function useGlide(slideCount: number, reducedMotion: boolean) {
       startAt: Math.min(activeIndexRef.current, slideCount - 1),
       perView: 3,
       gap: 24,
+      // Without this, the track can scroll to a view past the last full
+      // page — e.g. 4 items at perView 3 lets the last "page" show 1 card
+      // and 2 empty slots. `bound` clamps the track so the last reachable
+      // view is always full.
+      bound: true,
       // Glide's keyboard module listens document-wide and would hijack
       // arrow keys for the whole page; the dot buttons are the keyboard path.
       keyboard: false,
