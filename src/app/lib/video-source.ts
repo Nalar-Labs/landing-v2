@@ -49,23 +49,33 @@ export function parseVideoSource(raw: string): VideoSource | null {
   }
 
   if (host === "vimeo.com" || host === "player.vimeo.com") {
-    // vimeo.com/<id> and player.vimeo.com/video/<id>; ignore /channels/... etc.
+    // vimeo.com/<id>, player.vimeo.com/video/<id>, and video-in-collection
+    // URLs like vimeo.com/channels/<name>/<id> or vimeo.com/groups/<name>/videos/<id>.
     //
     // We can't just take the first numeric path segment: showcase/album URLs
     // (vimeo.com/showcase/<showcaseId>/video/<videoId>) have TWO numeric
     // segments, and the first one is the showcase, not the video. Taking it
-    // would silently embed the wrong content instead of failing. Instead,
-    // a "video" segment is the unambiguous anchor — the id right after it is
-    // always the actual video id. Without that anchor, the path must be
-    // exactly one numeric segment or we refuse to guess.
+    // would silently embed the wrong content instead of failing. So the rule
+    // is, in order:
+    //   1. A path segment exactly equal to "video" is an unambiguous anchor —
+    //      the id right after it is always the actual video id. This is what
+    //      disambiguates showcase URLs (and takes precedence even when other
+    //      numeric segments are present).
+    //   2. Otherwise, if exactly ONE path segment is numeric, it's
+    //      unambiguous regardless of what non-numeric segments (channels/,
+    //      groups/, videos/, etc.) surround it — there's nothing else it
+    //      could be.
+    //   3. Otherwise (zero or multiple numeric segments, no anchor) we
+    //      refuse to guess and return null.
     const videoIndex = segments.indexOf("video");
-    const id =
-      videoIndex !== -1
-        ? segments[videoIndex + 1]
-        : segments.length === 1
-          ? segments[0]
-          : undefined;
-    return id && /^\d+$/.test(id) ? { kind: "vimeo", id } : null;
+    if (videoIndex !== -1) {
+      const id = segments[videoIndex + 1];
+      return id && /^\d+$/.test(id) ? { kind: "vimeo", id } : null;
+    }
+    const numericSegments = segments.filter((segment) => /^\d+$/.test(segment));
+    return numericSegments.length === 1
+      ? { kind: "vimeo", id: numericSegments[0] }
+      : null;
   }
 
   return null;

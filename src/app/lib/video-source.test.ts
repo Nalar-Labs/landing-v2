@@ -44,6 +44,19 @@ test("parses Vimeo URL shapes", () => {
     parseVideoSource("https://vimeo.com/showcase/12345/video/67890"),
     { kind: "vimeo", id: "67890" },
   );
+  // Video inside a channel: one numeric segment, no "video" anchor — still
+  // unambiguous, so it must resolve rather than being rejected.
+  assert.deepEqual(
+    parseVideoSource("https://vimeo.com/channels/staffpicks/123456789"),
+    expected,
+  );
+  // Video inside a group: the anchor segment is "videos" (plural), which the
+  // exact "video" match deliberately misses — falls through to the single
+  // numeric segment rule instead.
+  assert.deepEqual(
+    parseVideoSource("https://vimeo.com/groups/somegroup/videos/123456789"),
+    expected,
+  );
 });
 
 test("returns null for anything it does not recognise", () => {
