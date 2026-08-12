@@ -72,10 +72,14 @@ function galleryOf(record: Record<string, unknown>): string[] {
   if (value === undefined) return [];
   if (
     !Array.isArray(value) ||
-    value.some((entry) => typeof entry !== "string" || entry.trim() === "")
+    // Gallery entries land directly in <img src>. An absolute third-party
+    // URL is not an XSS risk there, but it is an uncontrolled outbound
+    // request to whatever host is named — require site-relative paths, same
+    // as how strictly `video` is validated.
+    value.some((entry) => typeof entry !== "string" || !entry.startsWith("/"))
   ) {
     throw new Error(
-      `Portfolio item "${labelOf(record)}": "gallery" must be an array of non-empty image paths`,
+      `Portfolio item "${labelOf(record)}": "gallery" must be an array of site-relative image paths (starting with "/")`,
     );
   }
   return value as string[];

@@ -43,8 +43,9 @@ export function VideoFacade({
         <iframe
           src={embedUrl(source, { autoplay: true })}
           title={`Video: ${title}`}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
+          referrerPolicy="strict-origin-when-cross-origin"
           className="absolute inset-0 h-full w-full border-0"
         />
       ) : (

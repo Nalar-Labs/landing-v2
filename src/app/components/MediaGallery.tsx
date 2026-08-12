@@ -40,14 +40,18 @@ export function MediaGallery({
   const trackRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // PortfolioModal is a single instance that never unmounts — opening a
-  // different item just changes `video`/`gallery` props on this same
-  // component. Key effects off a signature of slide identity (kind+src),
-  // not `slides.length`: two different items can easily have the same
-  // slide count, in which case a length-only dependency would not re-run
-  // and would leave the observer watching stale, detached elements from
-  // the previous item — dots and swipe-stops-video would silently break.
-  // Do not "simplify" this back to `slides.length`.
+  // PortfolioModal does unmount ~200ms after close (Radix Presence, driven
+  // by DialogContent's data-[state=closed]:animate-out), so in practice
+  // MediaGallery gets a fresh instance on every open, and no code path
+  // changes `item` while the dialog is open. This reset is deliberate
+  // insurance rather than load-bearing today: it keys off a signature of
+  // slide identity (kind+src) instead of `slides.length`, because two
+  // different items can easily have the same slide count, in which case a
+  // length-only dependency wouldn't re-run and would leave the observer
+  // watching stale, detached elements from the previous item — dots and
+  // swipe-stops-video would silently break if that ever became reachable.
+  // Cheap and correct, so keep it rather than trimming it back to
+  // `slides.length`.
   const slideSignature = slides.map((slide) => `${slide.kind}:${slide.src}`).join("|");
 
   // A new item should always open on its first slide, scrolled fully to

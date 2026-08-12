@@ -24,10 +24,13 @@ export function PortfolioCard({
   return (
     // Not interactive itself — the title button below stretches over it. This
     // is what lets a play button coexist with "click anywhere to open".
-    // Must never gain its own stacking context (opacity/transform/filter/
-    // z-index) — the logo (z-30) > video (z-20) > title overlay (z-10)
-    // layering only resolves correctly while they all share this div's
-    // stacking context.
+    // This root creating its own stacking context (e.g. via hover:-translate-y-1
+    // below) is fine — a stacking context on the parent doesn't reorder its
+    // own children. The real constraint is on any INTERMEDIATE wrapper added
+    // between this root and the logo/video/title elements: it must not gain
+    // opacity/transform/filter/z-index of its own, or the logo (z-30) >
+    // video (z-20) > title overlay (z-10) layering stops resolving — those
+    // three need to stay in one shared stacking context.
     <div
       className={cn(
         "relative flex h-full w-full flex-col overflow-hidden rounded-card bg-surface text-left",

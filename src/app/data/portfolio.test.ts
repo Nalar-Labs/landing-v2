@@ -95,6 +95,11 @@ test("defaults video to undefined and gallery to an empty array", () => {
   assert.deepEqual(item.gallery, []);
 });
 
+test('treats video: "" as absent (the CMS writes "" when the field is cleared)', () => {
+  const [item] = parsePortfolioItems([{ ...valid, video: "" }]);
+  assert.equal(item.video, undefined);
+});
+
 test("rejects a local file path in video (videos are externally hosted)", () => {
   assert.throws(
     () => parsePortfolioItems([{ ...valid, video: "/images/portfolio/demo.mp4" }]),
@@ -126,4 +131,14 @@ test("throws on a malformed gallery", () => {
   );
   assert.throws(() => parsePortfolioItems([{ ...valid, gallery: [1] }]), /gallery/);
   assert.throws(() => parsePortfolioItems([{ ...valid, gallery: [""] }]), /gallery/);
+});
+
+test("rejects an absolute gallery URL (must be site-relative, like video)", () => {
+  assert.throws(
+    () =>
+      parsePortfolioItems([
+        { ...valid, gallery: ["https://example.com/image.webp"] },
+      ]),
+    /gallery/,
+  );
 });
