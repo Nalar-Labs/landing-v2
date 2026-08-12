@@ -4,6 +4,7 @@ import { cn } from "../lib/layout";
 import type { PortfolioItem } from "../data/portfolio";
 import { useGlide } from "../lib/use-glide";
 import { PortfolioCard } from "./PortfolioCard";
+import { Dots } from "./Dots";
 
 type PortfolioCarouselProps = {
   items: PortfolioItem[];
@@ -46,33 +47,14 @@ export function PortfolioCarousel({
         </ul>
       </div>
 
-      {/* Instagram-style dots: plain buttons driven by useGlide state. */}
-      <div
-        className="mt-10 flex justify-center gap-3"
-        role="group"
-        aria-label="Portfolio slides"
-      >
-        {items.map((item, index) => (
-          <button
-            key={item.title}
-            type="button"
-            onClick={() => goTo(index)}
-            aria-label={`Show ${item.title}`}
-            aria-current={index === activeIndex}
-            className="group flex h-6 w-6 items-center justify-center"
-          >
-            <span
-              aria-hidden="true"
-              className={cn(
-                "h-2 rounded-full transition-all duration-300",
-                index === activeIndex
-                  ? "w-6 bg-black"
-                  : "w-2 bg-black/20 group-hover:bg-black/40",
-              )}
-            />
-          </button>
-        ))}
-      </div>
+      <Dots
+        className="mt-10"
+        count={items.length}
+        activeIndex={activeIndex}
+        onSelect={goTo}
+        label="Portfolio slides"
+        labelForIndex={(index) => `Show ${items[index].title}`}
+      />
     </div>
   );
 }
