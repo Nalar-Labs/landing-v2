@@ -26,8 +26,8 @@ collections:
           hint: "Card image, and the poster frame shown before a video is played." }
       - { name: logo, label: Company logo, widget: image, required: false, hint: "Logo displayed in top-left corner of card" }
       - { name: video, label: Video URL, widget: string, required: false,
-          pattern: ['(youtube\.com|youtu\.be|vimeo\.com)', 'Must be a YouTube or Vimeo link'],
-          hint: "Upload the video to YouTube or Vimeo first, then paste the link here. Do not upload video files — this repo only stores images." }
+          pattern: ['^https?://(www\.|m\.)?(youtube(-nocookie)?\.com/(watch\?v=|embed/|shorts/|live/)|youtu\.be/)[A-Za-z0-9_-]{11}(?![A-Za-z0-9_-])(&.*)?$|^https?://(player\.)?vimeo\.com/(\S*/)?(video/)?\d+(/\S*)?$', 'Must be a full YouTube or Vimeo link, starting with https://'],
+          hint: "Upload the video to YouTube or Vimeo first, then paste the full link (including https://) here. Do not upload video files — this repo only stores images." }
       - { name: gallery, label: Extra images, widget: list, required: false,
           field: { name: image, label: Image, widget: image },
           hint: "Shown after the video in the popup, swipeable with dots." }

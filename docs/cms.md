@@ -52,6 +52,8 @@ Git keeps every version of every file forever, and GitHub rejects files over
 4. Optionally add **Extra images**; they become swipeable slides after the
    video in the popup.
 
-Anything other than a YouTube or Vimeo link is rejected — by the CMS as you
-type, and by the build as a backstop. Nothing loads from the video host until
-a visitor actually presses play.
+Anything other than a full `https://` YouTube or Vimeo link is rejected — by
+the CMS as you type, and by the build as a backstop (`npm run build` runs the
+data-layer tests before bundling, so a bad link fails the build instead of
+shipping a blank page). Nothing loads from the video host until a visitor
+actually presses play.

@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "build": "vite build",
+    "build": "node --test --experimental-strip-types src/app/data/*.test.ts && vite build",
     "dev": "vite"
   },
   "dependencies": {
