@@ -24,15 +24,19 @@ export function PortfolioCard({
   return (
     // Not interactive itself — the title button below stretches over it. This
     // is what lets a play button coexist with "click anywhere to open".
+    // Must never gain its own stacking context (opacity/transform/filter/
+    // z-index) — the logo (z-30) > video (z-20) > title overlay (z-10)
+    // layering only resolves correctly while they all share this div's
+    // stacking context.
     <div
       className={cn(
-        "group relative flex h-full w-full flex-col overflow-hidden rounded-card bg-surface text-left",
+        "relative flex h-full w-full flex-col overflow-hidden rounded-card bg-surface text-left",
         "transition-transform duration-300 ease-out hover:-translate-y-1",
         "focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand",
       )}
     >
       {item.logo && (
-        <div className="absolute top-4 left-4 z-30">
+        <div className="pointer-events-none absolute top-4 left-4 z-30">
           <img
             src={item.logo}
             alt={item.client || item.title}
@@ -72,7 +76,7 @@ export function PortfolioCard({
             type="button"
             onClick={onOpen}
             className={cn(
-              "text-left after:absolute after:inset-0 after:z-10 after:content-['']",
+              "cursor-pointer text-left after:absolute after:inset-0 after:z-10 after:content-['']",
               "focus-visible:outline-none",
             )}
           >
