@@ -1,6 +1,5 @@
 import { useState } from "react";
 import "@glidejs/glide/dist/css/glide.core.min.css";
-import { cn } from "../lib/layout";
 import type { PortfolioItem } from "../data/portfolio";
 import { useGlide } from "../lib/use-glide";
 import { PortfolioCard } from "./PortfolioCard";
