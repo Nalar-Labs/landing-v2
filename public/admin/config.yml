@@ -26,7 +26,7 @@ collections:
           hint: "Card image, and the poster frame shown before a video is played." }
       - { name: logo, label: Company logo, widget: image, required: false, hint: "Logo displayed in top-left corner of card" }
       - { name: video, label: Video URL, widget: string, required: false,
-          pattern: ['^https?://(www\.|m\.)?(youtube(-nocookie)?\.com/(watch\?v=|embed/|shorts/|live/)|youtu\.be/)[A-Za-z0-9_-]{11}(?![A-Za-z0-9_-])(&.*)?$|^https?://(player\.)?vimeo\.com/(\S*/)?(video/)?\d+(/\S*)?$', 'Must be a full YouTube or Vimeo link, starting with https://'],
+          pattern: ['^https?://(www\.|m\.)?(youtube(-nocookie)?\.com/(watch\?\S*v=|embed/|shorts/|live/)|youtu\.be/)[A-Za-z0-9_-]{11}(?![A-Za-z0-9_-])([?&#]\S*)?$|^https?://(www\.|player\.)?vimeo\.com/(\S*/)?(video/)?\d+(/[^?#\s]*)?([?#]\S*)?$', 'Must be a full YouTube or Vimeo link starting with https:// — paste exactly what the Share button gives you (youtu.be, watch, shorts, embed, live, or vimeo.com/<id>); extra parameters like ?si= or ?share= are fine'],
           hint: "Upload the video to YouTube or Vimeo first, then paste the full link (including https://) here. Do not upload video files — this repo only stores images." }
       - { name: gallery, label: Extra images, widget: list, required: false,
           field: { name: image, label: Image, widget: image },
