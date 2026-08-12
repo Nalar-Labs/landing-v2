@@ -22,8 +22,15 @@ collections:
       - { name: title, label: Title, widget: string }
       - { name: client, label: Client, widget: string, required: false }
       - { name: summary, label: Summary, widget: text, hint: "One sentence shown on the card and at the top of the popup." }
-      - { name: coverImage, label: Cover image, widget: image, required: false }
+      - { name: coverImage, label: Cover image, widget: image, required: false,
+          hint: "Card image, and the poster frame shown before a video is played." }
       - { name: logo, label: Company logo, widget: image, required: false, hint: "Logo displayed in top-left corner of card" }
+      - { name: video, label: Video URL, widget: string, required: false,
+          pattern: ['(youtube\.com|youtu\.be|vimeo\.com)', 'Must be a YouTube or Vimeo link'],
+          hint: "Upload the video to YouTube or Vimeo first, then paste the link here. Do not upload video files — this repo only stores images." }
+      - { name: gallery, label: Extra images, widget: list, required: false,
+          field: { name: image, label: Image, widget: image },
+          hint: "Shown after the video in the popup, swipeable with dots." }
       - { name: tags, label: Tags, widget: list, required: false, default: [] }
       - { name: order, label: Order, widget: number, value_type: int, default: 0, hint: "Carousel position, lowest first. Keep unique." }
       - { name: draft, label: Draft, widget: boolean, default: false, hint: "Drafts are hidden from the site." }

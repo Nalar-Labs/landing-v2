@@ -38,3 +38,20 @@ GitHub backend needs OAuth:
 
 Until then, `/admin/` on the deployed site will show a GitHub sign-in that
 cannot complete — that is expected.
+
+## Adding video
+
+Videos are **hosted externally** — they are never uploaded into this repo.
+Git keeps every version of every file forever, and GitHub rejects files over
+100 MB, so a video committed here would bloat the repo permanently.
+
+1. Upload the video to YouTube or Vimeo.
+2. Paste its link into **Video URL**.
+3. Set a **Cover image** — it is the poster frame shown before playback, on
+   both the card and the popup. Without it the video shows a grey placeholder.
+4. Optionally add **Extra images**; they become swipeable slides after the
+   video in the popup.
+
+Anything other than a YouTube or Vimeo link is rejected — by the CMS as you
+type, and by the build as a backstop. Nothing loads from the video host until
+a visitor actually presses play.
