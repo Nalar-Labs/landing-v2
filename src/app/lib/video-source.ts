@@ -50,8 +50,22 @@ export function parseVideoSource(raw: string): VideoSource | null {
 
   if (host === "vimeo.com" || host === "player.vimeo.com") {
     // vimeo.com/<id> and player.vimeo.com/video/<id>; ignore /channels/... etc.
-    const id = segments.find((segment) => /^\d+$/.test(segment));
-    return id ? { kind: "vimeo", id } : null;
+    //
+    // We can't just take the first numeric path segment: showcase/album URLs
+    // (vimeo.com/showcase/<showcaseId>/video/<videoId>) have TWO numeric
+    // segments, and the first one is the showcase, not the video. Taking it
+    // would silently embed the wrong content instead of failing. Instead,
+    // a "video" segment is the unambiguous anchor — the id right after it is
+    // always the actual video id. Without that anchor, the path must be
+    // exactly one numeric segment or we refuse to guess.
+    const videoIndex = segments.indexOf("video");
+    const id =
+      videoIndex !== -1
+        ? segments[videoIndex + 1]
+        : segments.length === 1
+          ? segments[0]
+          : undefined;
+    return id && /^\d+$/.test(id) ? { kind: "vimeo", id } : null;
   }
 
   return null;

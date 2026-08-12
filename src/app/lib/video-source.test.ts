@@ -38,6 +38,12 @@ test("parses Vimeo URL shapes", () => {
     parseVideoSource("https://player.vimeo.com/video/123456789"),
     expected,
   );
+  // Showcase/album URLs have two numeric segments (showcase id, then video
+  // id). The id AFTER "video" is the one that must win, not the first one.
+  assert.deepEqual(
+    parseVideoSource("https://vimeo.com/showcase/12345/video/67890"),
+    { kind: "vimeo", id: "67890" },
+  );
 });
 
 test("returns null for anything it does not recognise", () => {
@@ -49,6 +55,9 @@ test("returns null for anything it does not recognise", () => {
   // Right host, no usable id.
   assert.equal(parseVideoSource("https://www.youtube.com/watch?v=short"), null);
   assert.equal(parseVideoSource("https://vimeo.com/channels/staffpicks"), null);
+  // Two numeric segments with no "video" anchor — which one is the real id
+  // is ambiguous, so this must fail loudly rather than guess the first.
+  assert.equal(parseVideoSource("https://vimeo.com/12345/67890"), null);
   // Unsupported host.
   assert.equal(parseVideoSource("https://example.com/video.mp4"), null);
   // Non-http schemes must not slip through.
