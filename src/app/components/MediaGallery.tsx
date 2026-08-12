@@ -40,6 +40,25 @@ export function MediaGallery({
   const trackRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
+  // PortfolioModal is a single instance that never unmounts — opening a
+  // different item just changes `video`/`gallery` props on this same
+  // component. Key effects off a signature of slide identity (kind+src),
+  // not `slides.length`: two different items can easily have the same
+  // slide count, in which case a length-only dependency would not re-run
+  // and would leave the observer watching stale, detached elements from
+  // the previous item — dots and swipe-stops-video would silently break.
+  // Do not "simplify" this back to `slides.length`.
+  const slideSignature = slides.map((slide) => `${slide.kind}:${slide.src}`).join("|");
+
+  // A new item should always open on its first slide, scrolled fully to
+  // the start — otherwise leftover scroll position/activeIndex from the
+  // previous item leaks in. `scrollTo` without smooth behaviour avoids a
+  // visible scroll-back animation when the item changes.
+  useEffect(() => {
+    setActiveIndex(0);
+    trackRef.current?.scrollTo({ left: 0 });
+  }, [slideSignature]);
+
   // Drive the dots from actual scroll position, so swipe and dot clicks stay
   // in sync without either owning the other.
   useEffect(() => {
@@ -60,7 +79,7 @@ export function MediaGallery({
 
     for (const child of Array.from(track.children)) observer.observe(child);
     return () => observer.disconnect();
-  }, [slides.length]);
+  }, [slideSignature]);
 
   // Swiping away from the video slide stops playback — otherwise audio keeps
   // running under an image the user is looking at.
@@ -83,37 +102,46 @@ export function MediaGallery({
       <div
         ref={trackRef}
         data-lenis-prevent
+        tabIndex={0}
+        role="region"
+        aria-label={`${title} media gallery`}
         className={cn(
           "flex w-full snap-x snap-mandatory overflow-x-auto",
           // Hide the scrollbar; the dots are the affordance.
           "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
         )}
       >
-        {slides.map((slide, index) => (
-          <div
-            key={`${slide.kind}-${slide.src}`}
-            data-index={index}
-            className="w-full shrink-0 snap-start"
-          >
-            {slide.kind === "video" ? (
-              <VideoFacade
-                video={slide.src}
-                poster={poster}
-                title={title}
-                isPlaying={isVideoPlaying}
-                onPlay={onPlayVideo}
-                className="aspect-[16/9] w-full"
-              />
-            ) : (
-              <img
-                src={slide.src}
-                alt=""
-                loading="lazy"
-                className="aspect-[16/9] w-full object-cover"
-              />
-            )}
-          </div>
-        ))}
+        {slides.map((slide, index) => {
+          // Images are contiguous after the optional video slide, so their
+          // 1-based position among gallery images alone is the slide index
+          // (offset by the video slide when present).
+          const imageIndex = video ? index : index + 1;
+          return (
+            <div
+              key={`${slide.kind}-${index}`}
+              data-index={index}
+              className="w-full shrink-0 snap-start"
+            >
+              {slide.kind === "video" ? (
+                <VideoFacade
+                  video={slide.src}
+                  poster={poster}
+                  title={title}
+                  isPlaying={isVideoPlaying}
+                  onPlay={onPlayVideo}
+                  className="aspect-[16/9] w-full"
+                />
+              ) : (
+                <img
+                  src={slide.src}
+                  alt={`${title} — image ${imageIndex} of ${gallery.length}`}
+                  loading="lazy"
+                  className="aspect-[16/9] w-full object-cover"
+                />
+              )}
+            </div>
+          );
+        })}
       </div>
 
       <Dots
