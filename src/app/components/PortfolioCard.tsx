@@ -32,7 +32,7 @@ export function PortfolioCard({
       className={cn(
         "relative flex h-full w-full flex-col overflow-hidden rounded-card bg-surface text-left",
         "transition-transform duration-300 ease-out hover:-translate-y-1",
-        "focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand",
+        "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand",
       )}
     >
       {item.logo && (
