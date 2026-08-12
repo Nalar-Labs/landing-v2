@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "@glidejs/glide/dist/css/glide.core.min.css";
 import type { PortfolioItem } from "../data/portfolio";
 import { useGlide } from "../lib/use-glide";
@@ -34,6 +34,14 @@ export function PortfolioCarousel({
   // Index of the card whose video is playing, or null. Only one plays at a
   // time — starting another replaces it, which also unmounts the old iframe.
   const [playingIndex, setPlayingIndex] = useState<number | null>(null);
+
+  // Glide's track is overflow: hidden, not unmounted — a playing card that
+  // scrolls out of view stays mounted and audible with no visible source or
+  // reachable pause control. Stop playback whenever the active slide
+  // changes. Mirrors what MediaGallery already does for the modal.
+  useEffect(() => {
+    setPlayingIndex(null);
+  }, [activeIndex]);
 
   return (
     <div ref={rootRef} className="glide">
