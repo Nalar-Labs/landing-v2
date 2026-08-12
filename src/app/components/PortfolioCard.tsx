@@ -1,25 +1,38 @@
 import { cn, TYPE } from "../lib/layout";
 import type { PortfolioItem } from "../data/portfolio";
+import { VideoFacade } from "./VideoFacade";
 
 type PortfolioCardProps = {
   item: PortfolioItem;
   /** Opens the detail modal for this item. */
   onOpen: () => void;
+  /** Whether this card's inline video is playing. Owned by the carousel. */
+  isPlaying: boolean;
+  onPlay: () => void;
 };
 
-export function PortfolioCard({ item, onOpen }: PortfolioCardProps) {
+export function PortfolioCard({
+  item,
+  onOpen,
+  isPlaying,
+  onPlay,
+}: PortfolioCardProps) {
+  // Poster precedence: explicit cover, else the first gallery image, else the
+  // gradient placeholder rendered by VideoFacade.
+  const poster = item.coverImage ?? item.gallery[0];
+
   return (
-    <button
-      type="button"
-      onClick={onOpen}
+    // Not interactive itself — the title button below stretches over it. This
+    // is what lets a play button coexist with "click anywhere to open".
+    <div
       className={cn(
-        "relative flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-card bg-surface text-left",
+        "group relative flex h-full w-full flex-col overflow-hidden rounded-card bg-surface text-left",
         "transition-transform duration-300 ease-out hover:-translate-y-1",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand",
+        "focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand",
       )}
     >
       {item.logo && (
-        <div className="absolute top-4 left-4 z-20">
+        <div className="absolute top-4 left-4 z-30">
           <img
             src={item.logo}
             alt={item.client || item.title}
@@ -27,9 +40,21 @@ export function PortfolioCard({ item, onOpen }: PortfolioCardProps) {
           />
         </div>
       )}
-      {item.coverImage ? (
+
+      {item.video ? (
+        // z-20 lifts the media above the title's ::after overlay so the play
+        // button and the iframe receive their own clicks.
+        <VideoFacade
+          video={item.video}
+          poster={poster}
+          title={item.title}
+          isPlaying={isPlaying}
+          onPlay={onPlay}
+          className="relative z-20 aspect-[16/10] w-full"
+        />
+      ) : poster ? (
         <img
-          src={item.coverImage}
+          src={poster}
           alt=""
           loading="lazy"
           className="aspect-[16/10] w-full object-cover"
@@ -40,13 +65,25 @@ export function PortfolioCard({ item, onOpen }: PortfolioCardProps) {
           className="aspect-[16/10] w-full bg-gradient-to-br from-[#3c3c3c33] to-[#ffffff33]"
         />
       )}
+
       <div className="flex flex-1 flex-col p-6 md:p-8">
-        <span className={cn(TYPE.cardTitle, "mb-2 block")}>{item.title}</span>
+        <span className={cn(TYPE.cardTitle, "mb-2 block")}>
+          <button
+            type="button"
+            onClick={onOpen}
+            className={cn(
+              "text-left after:absolute after:inset-0 after:z-10 after:content-['']",
+              "focus-visible:outline-none",
+            )}
+          >
+            {item.title}
+          </button>
+        </span>
         {item.client && (
           <p className="mb-4 text-sm text-muted-ink">{item.client}</p>
         )}
         <p className={cn(TYPE.body, "text-muted-ink")}>{item.summary}</p>
       </div>
-    </button>
+    </div>
   );
 }
