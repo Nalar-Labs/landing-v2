@@ -2,6 +2,8 @@
 // node --test like the other data modules. The matching Vite loader lives in
 // portfolio-items.ts.
 
+import { parseVideoSource } from "../lib/video-source.ts";
+
 export type PortfolioItem = {
   title: string;
   /** Client or company name shown under the title. */
@@ -12,6 +14,10 @@ export type PortfolioItem = {
   coverImage?: string;
   /** Path under public/, e.g. "/images/portfolio/logos/company.png". Displayed in top-left corner. */
   logo?: string;
+  /** External video URL (YouTube/Vimeo). Never a local file — see docs/PRDs. */
+  video?: string;
+  /** Extra images shown after the video in the modal gallery. */
+  gallery: string[];
   tags: string[];
   /** Carousel position, ascending. */
   order: number;
@@ -48,6 +54,33 @@ function tagsOf(record: Record<string, unknown>): string[] {
   return value as string[];
 }
 
+function videoOf(record: Record<string, unknown>): string | undefined {
+  const value = optionalString(record, "video");
+  if (value === undefined) return undefined;
+  if (parseVideoSource(value) === null) {
+    throw new Error(
+      `Portfolio item "${labelOf(record)}": "video" must be a YouTube or Vimeo URL ` +
+        `(got "${value}"). Videos are hosted externally — upload to YouTube/Vimeo ` +
+        `and paste the link.`,
+    );
+  }
+  return value;
+}
+
+function galleryOf(record: Record<string, unknown>): string[] {
+  const value = record.gallery;
+  if (value === undefined) return [];
+  if (
+    !Array.isArray(value) ||
+    value.some((entry) => typeof entry !== "string" || entry.trim() === "")
+  ) {
+    throw new Error(
+      `Portfolio item "${labelOf(record)}": "gallery" must be an array of non-empty image paths`,
+    );
+  }
+  return value as string[];
+}
+
 function orderOf(record: Record<string, unknown>): number {
   const value = record.order;
   if (value === undefined) return 0;
@@ -77,6 +110,8 @@ export function parsePortfolioItems(raw: unknown[]): PortfolioItem[] {
       summary: requireString(record, "summary"),
       coverImage: optionalString(record, "coverImage"),
       logo: optionalString(record, "logo"),
+      video: videoOf(record),
+      gallery: galleryOf(record),
       tags: tagsOf(record),
       order: orderOf(record),
       body: requireString(record, "body"),

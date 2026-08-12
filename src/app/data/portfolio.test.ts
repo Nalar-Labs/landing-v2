@@ -81,3 +81,49 @@ test("throws on non-number or NaN order when the field is present", () => {
   assert.throws(() => parsePortfolioItems([{ ...valid, order: "2" }]), /order/);
   assert.throws(() => parsePortfolioItems([{ ...valid, order: NaN }]), /order/);
 });
+
+test("accepts a recognised external video URL", () => {
+  const [item] = parsePortfolioItems([
+    { ...valid, video: "https://youtu.be/dQw4w9WgXcQ" },
+  ]);
+  assert.equal(item.video, "https://youtu.be/dQw4w9WgXcQ");
+});
+
+test("defaults video to undefined and gallery to an empty array", () => {
+  const [item] = parsePortfolioItems([valid]);
+  assert.equal(item.video, undefined);
+  assert.deepEqual(item.gallery, []);
+});
+
+test("rejects a local file path in video (videos are externally hosted)", () => {
+  assert.throws(
+    () => parsePortfolioItems([{ ...valid, video: "/images/portfolio/demo.mp4" }]),
+    /video/,
+  );
+});
+
+test("rejects an unsupported video host", () => {
+  assert.throws(
+    () => parsePortfolioItems([{ ...valid, video: "https://example.com/v.mp4" }]),
+    /video/,
+  );
+});
+
+test("parses a gallery of image paths", () => {
+  const [item] = parsePortfolioItems([
+    { ...valid, gallery: ["/images/portfolio/a.webp", "/images/portfolio/b.webp"] },
+  ]);
+  assert.deepEqual(item.gallery, [
+    "/images/portfolio/a.webp",
+    "/images/portfolio/b.webp",
+  ]);
+});
+
+test("throws on a malformed gallery", () => {
+  assert.throws(
+    () => parsePortfolioItems([{ ...valid, gallery: "not-an-array" }]),
+    /gallery/,
+  );
+  assert.throws(() => parsePortfolioItems([{ ...valid, gallery: [1] }]), /gallery/);
+  assert.throws(() => parsePortfolioItems([{ ...valid, gallery: [""] }]), /gallery/);
+});
