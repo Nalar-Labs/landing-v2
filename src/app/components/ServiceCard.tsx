@@ -92,16 +92,18 @@ export function ServiceCard({
         >
           {title}
         </h4>
-        <motion.p
-          style={staticLayout ? undefined : { opacity: descriptionOpacity }}
-          className={cn(
-            "font-display font-semibold tracking-[-0.72px]",
-            "text-[22px] md:text-[32px] leading-tight relative z-10 text-ink",
-            compact && "text-[18px] md:text-[20px] leading-snug",
-          )}
-        >
-          {hook}
-        </motion.p>
+        {hook && (
+          <motion.p
+            style={staticLayout ? undefined : { opacity: descriptionOpacity }}
+            className={cn(
+              "font-display font-semibold tracking-[-0.72px]",
+              "text-[22px] md:text-[32px] leading-tight relative z-10 text-ink",
+              compact && "text-[18px] md:text-[20px] leading-snug",
+            )}
+          >
+            {hook}
+          </motion.p>
+        )}
         <motion.p
           style={staticLayout ? undefined : { opacity: descriptionOpacity }}
           className={cn(

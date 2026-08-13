@@ -42,7 +42,7 @@ export const HERO = {
 
 export type Service = {
   title: string;
-  hook: string;
+  hook?: string;
   description: string;
   /** Renders the subtle gradient accent surface. */
   gradient?: boolean;
@@ -55,50 +55,44 @@ export type ServiceGroup = {
 
 export const SERVICE_GROUPS: ServiceGroup[] = [
   {
-    heading: "Think Better about Tech",
+    heading: "Cut down costs with AI (Use our ROI Calculator here)",
     items: [
       {
-        title: "AI Transformation",
-        hook: "Feeling AI Fomo?",
+        title: "Replace SaaS with Open Source",
         description:
-          "We help you identify opportunities, plan strategically, and build a realistic roadmap to transform your business.",
+          "Quit paying for software you don't control, we can help build your own bespoke software using open source tools that are free to use and modify.",
       },
       {
-        title: "User Research",
-        hook: "Not sure what to build?",
+        title: "Replace Vendors with Agents",
         description:
-          "We can help build a deep understanding of your users through interviews, surveys, and usability testing to back your decisions.",
+          "Instead of hiring expensive vendors, we  help you build custom AI agents that work for you 24/7 for almost any task such as design, finance, and yes even software development.",
       },
       {
-        title: "AI Optimization",
-        hook: "Bunt through your tokens?",
+        title: "Token Optimization",
         description:
-          "We provide training to you and your organization to help you make the most of your AI capabilities and transform into an AI native company.",
+          "We can provide training to you and your organization to help you make the most of your AI capabilities and transform into an AI native company.",
         gradient: true,
       },
     ],
   },
   {
-    heading: "Build What's Best for Your Business",
+    heading: "Build for Millions with AI (See our highlights here)",
     items: [
       {
-        title: "Internal Tool Building",
-        hook: "Paying too much for SaaS?",
+        title: "User Research & Product Design",
         description:
-          "Migrate your team off paid SaaS subscriptions. Replacethem with custom in-house tools you own. No more recurring fees for things you don't control.",
+          "We have what AI doesn't have which is good design sense and product intuition. We can help you design and research your product to make sure it is user friendly and intuitive.",
         gradient: true,
       },
       {
-        title: "External Product Development",
-        hook: "Is your vibe-coded app production ready?",
+        title: "High Speed Development",
         description:
-          "We can build apps with robust architecture, seamless user experience, and maintainable code to support your growth to millions of users.",
+          "We iterate at blazingly fast speeds to get your product to market quickly and efficiently. We can help you build your product from scratch or help you improve your existing product.",
       },
       {
-        title: "Offline/Online Agent Deployment",
-        hook: "Want to build your own agent?",
+        title: "Cost Free Maintenance & Instant Handoff",
         description:
-          "We can help you train offline models that protect your data and sovereignty across your business.",
+          "We don't believe in vendor lock, and we ensure that all our work is handed off to you with complete documentation and support.",
       },
     ],
   },
