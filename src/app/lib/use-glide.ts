@@ -19,12 +19,22 @@ export function useGlide(slideCount: number, reducedMotion: boolean) {
     if (!root || slideCount === 0) return;
 
     const glide = new Glide(root, {
-      type: "carousel",
+      // "slider", not "carousel": carousel mode clones slides via cloneNode,
+      // and clones carry no React fiber — every handler inside them is dead and
+      // their DOM can never re-render. Cards contain interactive controls
+      // (open modal, play video), so cloning is not survivable. Trade-off:
+      // no infinite wrap-around; `rewind` still returns from last to first.
+      type: "slider",
       // Re-created when reducedMotion changes; resume at the slide the user
       // was on, clamped in case the slide count shrank.
       startAt: Math.min(activeIndexRef.current, slideCount - 1),
       perView: 3,
       gap: 24,
+      // Without this, the track can scroll to a view past the last full
+      // page — e.g. 4 items at perView 3 lets the last "page" show 1 card
+      // and 2 empty slots. `bound` clamps the track so the last reachable
+      // view is always full.
+      bound: true,
       // Glide's keyboard module listens document-wide and would hijack
       // arrow keys for the whole page; the dot buttons are the keyboard path.
       keyboard: false,
@@ -40,15 +50,6 @@ export function useGlide(slideCount: number, reducedMotion: boolean) {
       setActiveIndex(glide.index);
     });
     glide.mount();
-    // Glide's carousel mode clones slides for looping; the clones duplicate
-    // the card buttons in the a11y tree but React handlers don't survive
-    // cloneNode, so they'd be dead controls — hide them from AT and tab order.
-    root.querySelectorAll(".glide__slide--clone").forEach((clone) => {
-      clone.setAttribute("aria-hidden", "true");
-      clone.querySelectorAll("button, a").forEach((el) => {
-        (el as HTMLElement).tabIndex = -1;
-      });
-    });
     // Sync React state with where the new instance actually started.
     activeIndexRef.current = glide.index;
     setActiveIndex(glide.index);

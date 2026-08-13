@@ -3,8 +3,11 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
+  "engines": {
+    "node": ">=22.6.0"
+  },
   "scripts": {
-    "build": "vite build",
+    "build": "node --test --experimental-strip-types src/app/data/*.test.ts && vite build",
     "dev": "vite"
   },
   "dependencies": {

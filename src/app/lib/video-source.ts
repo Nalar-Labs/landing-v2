@@ -1,0 +1,109 @@
+// Portfolio videos are always externally hosted (see
+// docs/PRDs/2026-08-09_portfolio-video_PENDING.md §1) — the CMS stores a URL,
+// never a file. This module is the single place that understands those URLs.
+// Pure and dependency-free so it runs under `node --test`.
+
+export type VideoSource =
+  | { kind: "youtube"; id: string }
+  | { kind: "vimeo"; id: string };
+
+/** YouTube ids are exactly 11 URL-safe base64 characters. */
+const YOUTUBE_ID = /^[A-Za-z0-9_-]{11}$/;
+
+/**
+ * Parses a pasted video URL. Returns null — never throws — for anything
+ * unrecognised, so callers can decide whether that is a build error (content
+ * validation) or simply "render nothing" (components).
+ */
+export function parseVideoSource(raw: string): VideoSource | null {
+  if (typeof raw !== "string" || raw.trim() === "") return null;
+
+  let url: URL;
+  try {
+    url = new URL(raw.trim());
+  } catch {
+    return null;
+  }
+  // Guards against javascript:, data:, file: and friends.
+  if (url.protocol !== "https:" && url.protocol !== "http:") return null;
+
+  const host = url.hostname.replace(/^www\./, "").toLowerCase();
+  const segments = url.pathname.split("/").filter(Boolean);
+
+  if (host === "youtu.be") {
+    const id = segments[0] ?? "";
+    return YOUTUBE_ID.test(id) ? { kind: "youtube", id } : null;
+  }
+
+  if (host === "youtube.com" || host === "m.youtube.com" || host === "youtube-nocookie.com") {
+    if (segments[0] === "watch") {
+      const id = url.searchParams.get("v") ?? "";
+      return YOUTUBE_ID.test(id) ? { kind: "youtube", id } : null;
+    }
+    // /embed/<id>, /shorts/<id>, /live/<id>
+    if (segments[0] === "embed" || segments[0] === "shorts" || segments[0] === "live") {
+      const id = segments[1] ?? "";
+      return YOUTUBE_ID.test(id) ? { kind: "youtube", id } : null;
+    }
+    return null;
+  }
+
+  if (host === "vimeo.com" || host === "player.vimeo.com") {
+    // vimeo.com/<id>, player.vimeo.com/video/<id>, and video-in-collection
+    // URLs like vimeo.com/channels/<name>/<id> or vimeo.com/groups/<name>/videos/<id>.
+    //
+    // We can't just take the first numeric path segment: showcase/album URLs
+    // (vimeo.com/showcase/<showcaseId>/video/<videoId>) have TWO numeric
+    // segments, and the first one is the showcase, not the video. Taking it
+    // would silently embed the wrong content instead of failing. So the rule
+    // is, in order:
+    //   1. A path segment exactly equal to "video" is an unambiguous anchor —
+    //      the id right after it is always the actual video id. This is what
+    //      disambiguates showcase URLs (and takes precedence even when other
+    //      numeric segments are present).
+    //   2. Otherwise, if exactly ONE path segment is numeric, it's
+    //      unambiguous regardless of what non-numeric segments (channels/,
+    //      groups/, videos/, etc.) surround it — there's nothing else it
+    //      could be.
+    //   3. Otherwise (zero or multiple numeric segments, no anchor) we
+    //      refuse to guess and return null.
+    const videoIndex = segments.indexOf("video");
+    if (videoIndex !== -1) {
+      const id = segments[videoIndex + 1];
+      return id && /^\d+$/.test(id) ? { kind: "vimeo", id } : null;
+    }
+    const numericSegments = segments.filter((segment) => /^\d+$/.test(segment));
+    return numericSegments.length === 1
+      ? { kind: "vimeo", id: numericSegments[0] }
+      : null;
+  }
+
+  return null;
+}
+
+/** Builds the iframe src. Autoplay is opt-in: only after a real user click. */
+export function embedUrl(
+  source: VideoSource,
+  { autoplay = false, muted = false }: { autoplay?: boolean; muted?: boolean } = {},
+): string {
+  if (source.kind === "youtube") {
+    const params = new URLSearchParams({
+      rel: "0",
+      modestbranding: "1",
+      playsinline: "1",
+    });
+    if (autoplay) params.set("autoplay", "1");
+    // Browsers only permit unattended autoplay when the video is muted, so a
+    // hover preview MUST pass muted — otherwise the embed silently refuses to
+    // start and the card just sits on a blank player.
+    if (muted) params.set("mute", "1");
+    // nocookie host: no third-party cookies until the visitor presses play.
+    return `https://www.youtube-nocookie.com/embed/${source.id}?${params.toString()}`;
+  }
+
+  const params = new URLSearchParams({ dnt: "1" });
+  if (autoplay) params.set("autoplay", "1");
+  // Vimeo spells the same flag differently to YouTube's `mute`.
+  if (muted) params.set("muted", "1");
+  return `https://player.vimeo.com/video/${source.id}?${params.toString()}`;
+}

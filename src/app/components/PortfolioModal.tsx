@@ -1,4 +1,4 @@
-import { type RefObject, useRef } from "react";
+import { type RefObject, useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import {
   Dialog,
@@ -8,6 +8,7 @@ import {
 } from "./ui/dialog";
 import { cn, TYPE } from "../lib/layout";
 import type { PortfolioItem } from "../data/portfolio";
+import { MediaGallery } from "./MediaGallery";
 
 type PortfolioModalProps = {
   /** The modal is open while this is non-null. */
@@ -29,6 +30,15 @@ export function PortfolioModal({
   if (item) lastItemRef.current = item;
   const shown = item ?? lastItemRef.current;
 
+  const [isVideoPlaying, setVideoPlaying] = useState(false);
+
+  // Radix keeps the dialog mounted ~200ms after `open` flips false for its exit
+  // animation, so unmounting will NOT stop the iframe in time — the audio would
+  // keep playing. Reset explicitly whenever the open item changes or clears.
+  useEffect(() => {
+    setVideoPlaying(false);
+  }, [item]);
+
   return (
     <Dialog open={item !== null} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
@@ -46,7 +56,17 @@ export function PortfolioModal({
              Scrolling an inner div (not DialogContent) keeps the close X
              pinned while long content scrolls. */
           <div data-lenis-prevent className="max-h-[85vh] overflow-y-auto">
-            {shown.coverImage ? (
+            {shown.video || shown.gallery.length > 0 ? (
+              <MediaGallery
+                video={shown.video}
+                gallery={shown.gallery}
+                poster={shown.coverImage ?? shown.gallery[0]}
+                title={shown.title}
+                isVideoPlaying={isVideoPlaying}
+                onPlayVideo={() => setVideoPlaying(true)}
+                onStopVideo={() => setVideoPlaying(false)}
+              />
+            ) : shown.coverImage ? (
               <img
                 src={shown.coverImage}
                 alt=""
