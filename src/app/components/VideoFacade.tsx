@@ -12,6 +12,11 @@ type VideoFacadeProps = {
   /** Playback state is owned by the parent so it can stop playback. */
   isPlaying: boolean;
   onPlay: () => void;
+  /**
+   * Mute the embed. Required for hover-preview autoplay — browsers refuse
+   * unattended autoplay with sound. Click-to-play leaves this false.
+   */
+  muted?: boolean;
   className?: string;
 };
 
@@ -30,6 +35,7 @@ export function VideoFacade({
   title,
   isPlaying,
   onPlay,
+  muted = false,
   className,
 }: VideoFacadeProps) {
   const source = parseVideoSource(video);
@@ -41,7 +47,7 @@ export function VideoFacade({
     <div className={cn("relative overflow-hidden", className)}>
       {isPlaying ? (
         <iframe
-          src={embedUrl(source, { autoplay: true })}
+          src={embedUrl(source, { autoplay: true, muted })}
           title={`Video: ${title}`}
           allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen

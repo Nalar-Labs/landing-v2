@@ -87,6 +87,22 @@ test("builds privacy-preserving embed URLs", () => {
   assert.ok(vimeo.includes("dnt=1"));
 });
 
+test("adds the provider's mute flag only when asked", () => {
+  // Autoplay is refused by browsers unless the embed is muted, so the hover
+  // preview depends on these exact params being present.
+  const yt = embedUrl({ kind: "youtube", id: "dQw4w9WgXcQ" }, { autoplay: true, muted: true });
+  assert.ok(yt.includes("autoplay=1"));
+  assert.ok(yt.includes("mute=1"));
+
+  const vimeo = embedUrl({ kind: "vimeo", id: "123456789" }, { autoplay: true, muted: true });
+  assert.ok(vimeo.includes("autoplay=1"));
+  assert.ok(vimeo.includes("muted=1"));
+
+  // Unmuted (click-to-play) must not carry a mute flag.
+  assert.ok(!embedUrl({ kind: "youtube", id: "dQw4w9WgXcQ" }, { autoplay: true }).includes("mute"));
+  assert.ok(!embedUrl({ kind: "vimeo", id: "123456789" }, { autoplay: true }).includes("muted"));
+});
+
 test("adds autoplay only when asked", () => {
   assert.ok(
     embedUrl({ kind: "youtube", id: "dQw4w9WgXcQ" }, { autoplay: true }).includes(

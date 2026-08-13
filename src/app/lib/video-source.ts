@@ -84,7 +84,7 @@ export function parseVideoSource(raw: string): VideoSource | null {
 /** Builds the iframe src. Autoplay is opt-in: only after a real user click. */
 export function embedUrl(
   source: VideoSource,
-  { autoplay = false }: { autoplay?: boolean } = {},
+  { autoplay = false, muted = false }: { autoplay?: boolean; muted?: boolean } = {},
 ): string {
   if (source.kind === "youtube") {
     const params = new URLSearchParams({
@@ -93,11 +93,17 @@ export function embedUrl(
       playsinline: "1",
     });
     if (autoplay) params.set("autoplay", "1");
+    // Browsers only permit unattended autoplay when the video is muted, so a
+    // hover preview MUST pass muted — otherwise the embed silently refuses to
+    // start and the card just sits on a blank player.
+    if (muted) params.set("mute", "1");
     // nocookie host: no third-party cookies until the visitor presses play.
     return `https://www.youtube-nocookie.com/embed/${source.id}?${params.toString()}`;
   }
 
   const params = new URLSearchParams({ dnt: "1" });
   if (autoplay) params.set("autoplay", "1");
+  // Vimeo spells the same flag differently to YouTube's `mute`.
+  if (muted) params.set("muted", "1");
   return `https://player.vimeo.com/video/${source.id}?${params.toString()}`;
 }

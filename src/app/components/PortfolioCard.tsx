@@ -1,6 +1,14 @@
+import { useEffect, useRef } from "react";
 import { cn, TYPE } from "../lib/layout";
 import type { PortfolioItem } from "../data/portfolio";
 import { VideoFacade } from "./VideoFacade";
+
+/**
+ * How long the pointer must rest on a card before its video loads. Mounting a
+ * provider iframe costs ~1MB of JS, so firing on every pass-through would be
+ * far worse than the facade it replaces. Matches YouTube's own hover delay.
+ */
+const HOVER_INTENT_MS = 400;
 
 type PortfolioCardProps = {
   item: PortfolioItem;
@@ -8,15 +16,57 @@ type PortfolioCardProps = {
   onOpen: () => void;
   /** Whether this card's inline video is playing. Owned by the carousel. */
   isPlaying: boolean;
+  /** True while the current playback is a hover preview (silent). */
+  isMuted: boolean;
+  /** Click-to-play: starts playback with sound. */
   onPlay: () => void;
+  /** Pointer rested on the card — start a muted preview. */
+  onHoverStart: () => void;
+  /** Pointer left the card — stop a preview (a clicked play keeps going). */
+  onHoverEnd: () => void;
+  /** Suppresses hover autoplay entirely. */
+  reducedMotion: boolean;
 };
 
 export function PortfolioCard({
   item,
   onOpen,
   isPlaying,
+  isMuted,
   onPlay,
+  onHoverStart,
+  onHoverEnd,
+  reducedMotion,
 }: PortfolioCardProps) {
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearHoverTimer = () => {
+    if (hoverTimer.current) {
+      clearTimeout(hoverTimer.current);
+      hoverTimer.current = null;
+    }
+  };
+
+  // A card can unmount mid-hover (carousel re-render); don't leave a timer
+  // that fires playback for a card that no longer exists.
+  useEffect(() => clearHoverTimer, []);
+
+  // Only a real mouse gets hover preview. On touch, `pointerenter` fires on
+  // tap and would start a video the user is actually trying to tap through.
+  const canHoverPreview = (pointerType: string) =>
+    pointerType === "mouse" && !!item.video && !reducedMotion;
+
+  const handlePointerEnter = (event: React.PointerEvent) => {
+    if (!canHoverPreview(event.pointerType)) return;
+    clearHoverTimer();
+    hoverTimer.current = setTimeout(onHoverStart, HOVER_INTENT_MS);
+  };
+
+  const handlePointerLeave = (event: React.PointerEvent) => {
+    if (event.pointerType !== "mouse") return;
+    clearHoverTimer();
+    onHoverEnd();
+  };
   // Poster precedence: explicit cover, else the first gallery image, else the
   // gradient placeholder rendered by VideoFacade.
   const poster = item.coverImage ?? item.gallery[0];
@@ -32,6 +82,8 @@ export function PortfolioCard({
     // video (z-20) > title overlay (z-10) layering stops resolving — those
     // three need to stay in one shared stacking context.
     <div
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
       className={cn(
         "relative flex h-full w-full flex-col overflow-hidden rounded-card bg-surface text-left",
         "transition-transform duration-300 ease-out hover:-translate-y-1",
@@ -57,6 +109,7 @@ export function PortfolioCard({
           title={item.title}
           isPlaying={isPlaying}
           onPlay={onPlay}
+          muted={isMuted}
           className="relative z-20 aspect-[16/10] w-full"
         />
       ) : poster ? (

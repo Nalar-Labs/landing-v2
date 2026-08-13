@@ -31,16 +31,22 @@ export function PortfolioCarousel({
   // e.g. 4 items at perView 3 has 2 pages: [0,1,2] and [1,2,3].
   const pageCount = Math.max(1, items.length - perView + 1);
 
-  // Index of the card whose video is playing, or null. Only one plays at a
-  // time — starting another replaces it, which also unmounts the old iframe.
-  const [playingIndex, setPlayingIndex] = useState<number | null>(null);
+  // Which card is playing, and whether it started as a silent hover preview
+  // or a deliberate click. Only one plays at a time — starting another
+  // replaces it, which also unmounts the old iframe. `muted` matters because
+  // moving the pointer away should end a preview but must NOT cut off a video
+  // the visitor actually clicked play on.
+  const [playing, setPlaying] = useState<{
+    index: number;
+    muted: boolean;
+  } | null>(null);
 
   // Glide's track is overflow: hidden, not unmounted — a playing card that
   // scrolls out of view stays mounted and audible with no visible source or
   // reachable pause control. Stop playback whenever the active slide
   // changes. Mirrors what MediaGallery already does for the modal.
   useEffect(() => {
-    setPlayingIndex(null);
+    setPlaying(null);
   }, [activeIndex]);
 
   return (
@@ -56,11 +62,21 @@ export function PortfolioCarousel({
                 onOpen={() => {
                   // Stop inline playback before the modal takes over, so audio
                   // never continues behind the dialog.
-                  setPlayingIndex(null);
+                  setPlaying(null);
                   onOpen(item);
                 }}
-                isPlaying={playingIndex === index}
-                onPlay={() => setPlayingIndex(index)}
+                isPlaying={playing?.index === index}
+                isMuted={playing?.index === index && playing.muted}
+                onPlay={() => setPlaying({ index, muted: false })}
+                onHoverStart={() => setPlaying({ index, muted: true })}
+                onHoverEnd={() =>
+                  // Only tear down a hover preview. A video the visitor clicked
+                  // play on keeps running when the pointer moves away.
+                  setPlaying((current) =>
+                    current?.index === index && current.muted ? null : current,
+                  )
+                }
+                reducedMotion={reducedMotion}
               />
             </li>
           ))}
