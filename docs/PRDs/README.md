@@ -40,9 +40,16 @@ YYYY-MM-DD_<slug>_<STATUS>.md
 
 | Status | Meaning |
 |---|---|
-| `PENDING` | Agreed or in progress, not yet live. |
+| `PENDING` | Agreed or in progress. Not built yet. |
+| `DEVELOPED` | Built and merged, but **not live**. Waiting on a release, a dependency, or a decision. |
 | `DEPLOYED` | Shipped to production. |
 | `ICEBOXED` | Deliberately parked. Keep the file — the reasoning is the value. |
+
+The normal path is `PENDING → DEVELOPED → DEPLOYED`, with `ICEBOXED` available at
+any point. `DEVELOPED` exists because "built" and "live" are genuinely different
+states here: work can sit merged for a while, and a PRD marked `PENDING` when the
+code already exists sends the next person to write something that is already
+built.
 
 Example: `2026-08-09_portfolio-video_PENDING.md`
 

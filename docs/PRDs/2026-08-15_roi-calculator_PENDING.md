@@ -46,13 +46,46 @@ are not equally trustworthy:
 | Rate tiers (Low $2,400 / Med $4,400 / High $6,400 per month) | Financial Plan 2026 → Baselines | Real |
 | Consulting rate $35/hr | Financial Plan 2026 → Hourly Rate References | Real |
 | Agency benchmark $11,666.67/mo | Financial Plan 2026 → Benchmark ($35k / 3 months) | Real |
-| Hosting bands ($40–$900/mo) | **Estimate. No source.** | Weak |
-| Maintenance hours (8/16/24 per month) | **Estimate. No source.** | Weak |
+| Maintenance hours (8/16/24 per month) | **Your commitment**, not a technical guess | Real |
+| Hosting: $25 base + $0.30/user | Deliberately simple estimate — see §2.1 | Admitted estimate |
 | Complexity weights | All 1.00 — deliberately neutral | Neutral |
 
-**The two weak rows are the ones a technical prospect will challenge.** They must
-be sanity-checked against a real AWS calculator before launch. Until then the
-model is directionally right and precisely wrong.
+Maintenance is not a guess: it is how many hours a month you agree to give each
+tier, priced at your own consulting rate. That is a business decision, and it is
+defensible precisely because you set it.
+
+### 2.1 Hosting is a formula, not a research project
+
+**Decision.** Hosting is `MAX(base, users × perUser)` — two numbers, currently
+$25 and $0.30. That is the entire model.
+
+| Users | Hosting/month |
+|---|---|
+| 10 | $25 |
+| 40 | $25 |
+| 100 | $30 |
+| 500 | $150 |
+| 5,000 | $1,500 |
+
+It is an admitted estimate rather than a quote, and that is the point: it is
+explainable in one sentence on a call — *"a small base for the server, plus a few
+cents per user"* — and there are two numbers to defend instead of eight.
+
+**Rejected — banded lookup by user count** (the original four-band table:
+$40 / $150 / $400 / $900). Beyond being unsourced, bands have **cliff edges**:
+100 users cost $150 and 101 users cost $400. One extra employee nearly tripling
+the running cost is indefensible on a call, and it makes the payback figure jump
+discontinuously for no reason the visitor can see. The formula cannot do this.
+
+**Rejected — price it from a real AWS calculator.** More accurate in principle,
+but it buys precision the output does not need: hosting is the smallest term in
+the comparison (at 40 users it is $25 against a $560 maintenance line and $1,800
+of SaaS spend), so the headline barely moves. It would also decay — AWS pricing
+changes, and nobody will re-derive it.
+
+**The honest framing:** real hosting cost tracks traffic, data and concurrency,
+not seat count. Seats are an admitted proxy, documented in the Hosting tab, and
+worth revisiting above ~500 users where the per-user term starts to dominate.
 
 **Rejected — hard-code the constants in the component.** Fastest to build, but
 every tuning pass becomes a code change and the provenance disappears.
@@ -258,11 +291,11 @@ UI is presentational.
 
 | Risk | Mitigation |
 |---|---|
-| **Hosting and maintenance numbers are unsourced estimates.** A technical prospect challenges them and the credibility of the whole widget goes with it. | Validate against a real AWS calculator before launch. They are isolated in two tabs, so correcting them is a cell edit. |
+| **Hosting is an admitted estimate**, so a technical prospect may challenge it. | It is the smallest term in the comparison (§2.1), so challenging it barely moves the headline. Present it as an estimate, not a quote. Two cells to correct. |
 | A confident wrong number is worse than no calculator. | Label output as an estimate; every figure resolves on the call. Guards in §7 prevent absurd values. |
 | ROI % is highly horizon-sensitive (346% at 36mo, 49% at 12mo). | Never render the percentage without the horizon beside it. |
 | Mode B is the fallback for several distinct conditions, so a visitor may expect a savings figure and not get one. | Mode B states *why* in a sentence ("you're not replacing existing software"), rather than silently omitting. |
-| Real AWS cost tracks traffic and data, not seat count. | Documented in the Hosting tab. Seats are an admitted proxy; revisit above ~500 users. |
+| Real hosting cost tracks traffic and data, not seat count. | Documented in the Hosting tab. Seats are an admitted proxy; revisit above ~500 users, where the per-user term starts to dominate. |
 | The chip in PRD 1 becomes a dead link if ordering slips. | Gate it on this section existing (PRD 1 §9). |
 
 ---

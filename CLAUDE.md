@@ -13,7 +13,9 @@ trade-offs, risks. Written and agreed before code. Lives in `docs/PRDs/`.
 Full convention: [`docs/PRDs/README.md`](docs/PRDs/README.md).
 
 - Filename: `YYYY-MM-DD_<slug>_<STATUS>.md`, date = **last updated**,
-  status = `PENDING` | `DEPLOYED` | `ICEBOXED`.
+  status = `PENDING` | `DEVELOPED` | `DEPLOYED` | `ICEBOXED`.
+  `DEVELOPED` means built and merged but **not live** — "built" and "shipped" are
+  different states here, so don't collapse them.
 - Status changes and revisions are **renames** (`git mv`), so the filename never
   disagrees with reality. Keep the `Status:` line inside the doc in sync.
 - Keep rejected options and the reasoning — that's the value six months later.
