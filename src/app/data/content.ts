@@ -19,9 +19,9 @@ export const NAV_LINKS: NavLink[] = [
 ];
 
 export const HERO = {
-  prefix: "We build",
-  cycling: ["world-class", "beautiful", "scalable", "secure", "customized"],
-  suffix: "software at break-neck speed",
+  prefix: "We build custom",
+  cycling: ["agents", "systems", "software", "tools", "platforms","apps"],
+  suffix: "better and faster",
   links: [
     { label: "Book a call", href: CALENDLY_URL },
     { label: "Refer a friend", href: "#refer" },
