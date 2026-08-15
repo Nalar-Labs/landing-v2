@@ -18,9 +18,13 @@ export default function App() {
           <Navbar />
           <main>
             <Hero />
+            {/* PRD 2 — the ROI Calculator mounts here, between Hero and
+                Services. Its `#roi-calculator` anchor and the Services chip
+                that links to it ship together with the calculator itself,
+                never before: an anchor to nothing is a dead link. */}
             <Services />
-            <Approach />
             <Portfolio />
+            <Approach />
             <CTA />
           </main>
         </div>
