@@ -12,7 +12,7 @@ test("SERVICE_CARD_COUNT is 3 (one trio of service cards)", () => {
 });
 
 test("getCardIntensity is 0 at the very start of a card's band", () => {
-  assert.equal(getCardIntensity(0, 0), 0);
+  assert.equal(getCardIntensity(0, 0, 3), 0);
 });
 
 test("getCardIntensity peaks at 1 in the middle of a card's band", () => {
@@ -23,8 +23,8 @@ test("getCardIntensity peaks at 1 in the middle of a card's band", () => {
 });
 
 test("getCardIntensity is 0 outside a card's band", () => {
-  assert.equal(getCardIntensity(0.9, 0), 0);
-  assert.equal(getCardIntensity(0, 5), 0);
+  assert.equal(getCardIntensity(0.9, 0, 6), 0);
+  assert.equal(getCardIntensity(0, 5, 6), 0);
 });
 
 test("getCardIntensity ramps linearly between band start and peak", () => {

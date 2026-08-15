@@ -3,9 +3,6 @@
  * No DOM, no React — safe to unit test directly with `node --test`.
  */
 
-/** One trio of service cards. */
-export const SERVICE_CARD_COUNT = 3;
-
 /**
  * Each card owns an equal slice of the pinned scroll and opens across it.
  * The final 10% is deliberately left over so all three sit fully expanded
@@ -16,6 +13,9 @@ const CARD_WINDOWS = [
   [0.3, 0.6],
   [0.6, 0.9],
 ] as const;
+
+/** Derived from CARD_WINDOWS so the two can never drift out of sync. */
+export const SERVICE_CARD_COUNT = CARD_WINDOWS.length;
 
 function clamp01(value: number): number {
   return Math.min(1, Math.max(0, value));
@@ -32,12 +32,10 @@ function inverseLerp(start: number, end: number, value: number): number {
  * and ramps linearly up to 1 at the band's midpoint, then back down to 0 —
  * so only the card whose band contains `progress` is ever significantly
  * inflated, matching a spotlight passing across the cards as you scroll.
+ * `count` has no default for the same reason `getCardExpansion`'s doesn't —
+ * see that function's comment.
  */
-export function getCardIntensity(
-  progress: number,
-  index: number,
-  count: number = SERVICE_CARD_COUNT,
-): number {
+export function getCardIntensity(progress: number, index: number, count: number): number {
   const band = 1 / count;
   const start = index * band;
   const peak = start + band / 2;
