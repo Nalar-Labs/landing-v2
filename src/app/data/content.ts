@@ -53,53 +53,27 @@ export type Service = {
   gradient?: boolean;
 };
 
-export type ServiceGroup = {
-  heading: string;
-  items: Service[];
-};
-
-export const SERVICE_GROUPS: ServiceGroup[] = [
+/**
+ * One trio, mixed from the two former groups. Cut from six per the Aug-9
+ * redesign: the group sub-headings had nothing left to distinguish once a
+ * single group remained.
+ */
+export const SERVICES: Service[] = [
   {
-    heading: "Cut down costs with AI (Use our ROI Calculator here)",
-    items: [
-      {
-        title: "Replace SaaS with Open Source",
-        description:
-          "Quit paying for software you don't control, we can help build your own bespoke software using open source tools that are free to use and modify.",
-      },
-      {
-        title: "Replace Vendors with Agents",
-        description:
-          "Instead of hiring expensive vendors, we  help you build custom AI agents that work for you 24/7 for almost any task such as design, finance, and yes even software development.",
-      },
-      {
-        title: "Token Optimization",
-        description:
-          "We can provide training to you and your organization to help you make the most of your AI capabilities and transform into an AI native company.",
-        gradient: true,
-      },
-    ],
+    title: "Replace SaaS with Open Source",
+    description:
+      "Quit paying for software you don't control, we can help build your own bespoke software using open source tools that are free to use and modify.",
   },
   {
-    heading: "Build for Millions with AI (See our highlights here)",
-    items: [
-      {
-        title: "User Research & Product Design",
-        description:
-          "We have what AI doesn't have which is good design sense and product intuition. We can help you design and research your product to make sure it is user friendly and intuitive.",
-        gradient: true,
-      },
-      {
-        title: "High Speed Development",
-        description:
-          "We iterate at blazingly fast speeds to get your product to market quickly and efficiently. We can help you build your product from scratch or help you improve your existing product.",
-      },
-      {
-        title: "Cost Free Maintenance & Instant Handoff",
-        description:
-          "We don't believe in vendor lock, and we ensure that all our work is handed off to you with complete documentation and support.",
-      },
-    ],
+    title: "Replace Vendors with Agents",
+    description:
+      "Instead of hiring expensive vendors, we help you build custom AI agents that work for you 24/7 for almost any task such as design, finance, and yes even software development.",
+  },
+  {
+    title: "Cost Free Maintenance & Instant Handoff",
+    description:
+      "We document what was built, train your team, and hand over open tools you own outright — so you are never locked into a stack we control.",
+    gradient: true,
   },
 ];
 

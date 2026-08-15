@@ -3,25 +3,18 @@
  * No DOM, no React — safe to unit test directly with `node --test`.
  */
 
-/** 3 Consultation cards + 3 End-to-End Implementation cards. */
-export const SERVICE_CARD_COUNT = 6;
+/** One trio of service cards. */
+export const SERVICE_CARD_COUNT = 3;
 
-const FIRST_GROUP_END = 0.36;
-const FIRST_GROUP_FADE_END = 0.48;
-const SECOND_SUBTITLE_FADE_START = 0.48;
-const SECOND_SUBTITLE_FADE_END = 0.58;
-const SECOND_GROUP_TEXT_FADE_END = 0.68;
-
-const FIRST_GROUP_CARD_WINDOWS = [
-  [0, 0.12],
-  [0.12, 0.24],
-  [0.24, FIRST_GROUP_END],
-] as const;
-
-const SECOND_GROUP_CARD_WINDOWS = [
-  [SECOND_GROUP_TEXT_FADE_END, 0.78],
-  [0.78, 0.89],
-  [0.89, 1],
+/**
+ * Each card owns an equal slice of the pinned scroll and opens across it.
+ * The final 10% is deliberately left over so all three sit fully expanded
+ * before the section releases.
+ */
+const CARD_WINDOWS = [
+  [0, 0.3],
+  [0.3, 0.6],
+  [0.6, 0.9],
 ] as const;
 
 function clamp01(value: number): number {
@@ -65,13 +58,6 @@ export function getCardIntensity(
   return result;
 }
 
-/**
- * Returns 0-1: how "expanded" the card at `index` should be at the given
- * overall scroll `progress`. The Services section advances one subtitle at a
- * time: group 1 cards open sequentially, all group 1 cards collapse/fade out,
- * the subtitle crossfades to group 2, group 2 text fades in collapsed, and then
- * group 2 cards open sequentially until the pinned section releases.
- */
 export function getCardExpansion(
   progress: number,
   index: number,
@@ -87,39 +73,6 @@ export function getCardExpansion(
     return (progress - start) / (rampEnd - start);
   }
 
-  const isFirstGroup = index < 3;
-  const localIndex = isFirstGroup ? index : index - 3;
-  const [start, end] = (isFirstGroup ? FIRST_GROUP_CARD_WINDOWS : SECOND_GROUP_CARD_WINDOWS)[
-    localIndex
-  ];
-  const expanded = inverseLerp(start, end, progress);
-
-  if (isFirstGroup) {
-    const collapse = 1 - inverseLerp(FIRST_GROUP_END, FIRST_GROUP_FADE_END, progress);
-    return Math.min(expanded, collapse);
-  }
-
-  return expanded;
-}
-
-/**
- * Returns 0-1 opacity for each three-card Services group while pinned.
- */
-export function getServiceHeadingOpacity(progress: number, groupIndex: number): number {
-  if (groupIndex === 0) {
-    return 1 - inverseLerp(FIRST_GROUP_END, FIRST_GROUP_FADE_END, progress);
-  }
-
-  return inverseLerp(SECOND_SUBTITLE_FADE_START, SECOND_SUBTITLE_FADE_END, progress);
-}
-
-/**
- * Returns 0-1 opacity for each Services group card row while pinned.
- */
-export function getServiceCardsOpacity(progress: number, groupIndex: number): number {
-  if (groupIndex === 0) {
-    return 1 - inverseLerp(FIRST_GROUP_END, FIRST_GROUP_FADE_END, progress);
-  }
-
-  return inverseLerp(SECOND_SUBTITLE_FADE_END, SECOND_GROUP_TEXT_FADE_END, progress);
+  const [start, end] = CARD_WINDOWS[index];
+  return inverseLerp(start, end, progress);
 }

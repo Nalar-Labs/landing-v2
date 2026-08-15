@@ -3,7 +3,7 @@
 // breaking tests, but the shapes the components rely on must hold.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { HERO, SERVICE_GROUPS, APPROACH_STEPS } from "./content.ts";
+import { HERO, SERVICES, APPROACH_STEPS } from "./content.ts";
 import { SERVICE_CARD_COUNT } from "../lib/service-scroll-sequence.ts";
 
 test("hero has at least one line and every line has non-empty static copy", () => {
@@ -28,8 +28,14 @@ test("hero has a non-empty headline (the promoted h1)", () => {
 });
 
 test("SERVICE_CARD_COUNT matches the actual number of services in content", () => {
-  const actual = SERVICE_GROUPS.reduce((n, g) => n + g.items.length, 0);
-  assert.equal(actual, SERVICE_CARD_COUNT);
+  assert.equal(SERVICES.length, SERVICE_CARD_COUNT);
+});
+
+test("every service has a title and a description", () => {
+  for (const service of SERVICES) {
+    assert.ok(service.title.trim().length > 0);
+    assert.ok(service.description.trim().length > 0);
+  }
 });
 
 test("approach steps exist and each has a body (steps list or paragraph)", () => {

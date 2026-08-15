@@ -6,8 +6,8 @@ import {
   getCardExpansion,
 } from "./service-scroll-sequence.ts";
 
-test("SERVICE_CARD_COUNT is 6 (3 Consultation + 3 End-to-End Implementation cards)", () => {
-  assert.equal(SERVICE_CARD_COUNT, 6);
+test("SERVICE_CARD_COUNT is 3 (one trio of service cards)", () => {
+  assert.equal(SERVICE_CARD_COUNT, 3);
 });
 
 test("getCardIntensity is 0 at the very start of a card's band", () => {
@@ -15,10 +15,10 @@ test("getCardIntensity is 0 at the very start of a card's band", () => {
 });
 
 test("getCardIntensity peaks at 1 in the middle of a card's band", () => {
-  // card 0's band is [0, 1/6], peak at 1/12
-  assert.equal(getCardIntensity(1 / 12, 0), 1);
+  // card 0's band is [0, 1/6], peak at 1/12 (explicit count: SERVICE_CARD_COUNT is 3 now)
+  assert.equal(getCardIntensity(1 / 12, 0, 6), 1);
   // card 2's band is [2/6, 3/6], peak at 2.5/6
-  assert.equal(getCardIntensity(2.5 / 6, 2), 1);
+  assert.equal(getCardIntensity(2.5 / 6, 2, 6), 1);
 });
 
 test("getCardIntensity is 0 outside a card's band", () => {
@@ -28,7 +28,8 @@ test("getCardIntensity is 0 outside a card's band", () => {
 
 test("getCardIntensity ramps linearly between band start and peak", () => {
   // card 0 band [0, 1/6], peak 1/12 -> halfway to peak should be ~0.5
-  const halfway = getCardIntensity(1 / 24, 0);
+  // (explicit count: SERVICE_CARD_COUNT is 3 now)
+  const halfway = getCardIntensity(1 / 24, 0, 6);
   assert.ok(Math.abs(halfway - 0.5) < 1e-9, `expected ~0.5, got ${halfway}`);
 });
 
@@ -39,30 +40,24 @@ test("getCardIntensity works for an arbitrary count (Approach steps reuse it)", 
   assert.equal(getCardIntensity(0.99, 2, 3) > 0, true);
 });
 
-test("getCardExpansion is 0 before a card's band starts", () => {
-  assert.equal(getCardExpansion(0, 1), 0);
-  assert.equal(getCardExpansion(1 / 6 - 0.001, 1), 0);
+test("getCardExpansion is 0 before a card's window starts", () => {
+  // card 1's window is [0.3, 0.6]
+  assert.equal(getCardExpansion(0.29, 1), 0);
 });
 
-test("getCardExpansion ramps up inside the band's first 60%", () => {
-  // card 0: band [0, 1/6], ramp ends at 0.1; halfway through the ramp = 0.5
-  const halfway = getCardExpansion(0.05, 0);
-  assert.ok(Math.abs(halfway - 0.5) < 1e-9, `expected ~0.5, got ${halfway}`);
+test("getCardExpansion ramps linearly across a card's window", () => {
+  // card 0's window is [0, 0.3]; halfway through is 0.5
+  assert.equal(getCardExpansion(0.15, 0), 0.5);
 });
 
-test("getCardExpansion holds at 1 for the rest of the scroll (cards stay expanded)", () => {
-  assert.equal(getCardExpansion(0.1, 0), 1);
-  assert.equal(getCardExpansion(0.5, 0), 1);
-  assert.equal(getCardExpansion(1, 0), 1);
-  // and the last card is fully expanded by the end
-  assert.equal(getCardExpansion(1, 5), 1);
+test("getCardExpansion holds at 1 after its window (cards stay expanded)", () => {
+  assert.equal(getCardExpansion(0.95, 0), 1);
+  assert.equal(getCardExpansion(1, 2), 1);
 });
 
-test("getCardExpansion is monotonic in progress (reverses cleanly on scroll-up)", () => {
-  let prev = -1;
-  for (let p = 0; p <= 1.0001; p += 0.01) {
-    const v = getCardExpansion(p, 3);
-    assert.ok(v >= prev, `not monotonic at p=${p}`);
-    prev = v;
+test("every card is fully expanded by the end of the scroll", () => {
+  for (let i = 0; i < SERVICE_CARD_COUNT; i += 1) {
+    assert.equal(getCardExpansion(1, i), 1);
   }
 });
+
