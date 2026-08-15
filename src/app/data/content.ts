@@ -46,7 +46,7 @@ export const PHILOSOPHY_INTRO =
   "Nalar in Bahasa means “common sense”. Because of AI, we believe the old way of building software stops making sense — and here's why:";
 
 /** Closes the section and hands off to the calculator. */
-export const PHILOSOPHY_OUTRO = "Don't believe us?";
+export const PHILOSOPHY_OUTRO = "Still Not Convinced?";
 
 /**
  * The three philosophy points. They render as the section's cards, so the

@@ -66,7 +66,11 @@ export function ServiceCard({
         transition={{ duration: 0.3, ease: "easeOut" }}
         className={cn(
           "relative flex w-full flex-col overflow-hidden rounded-card",
-          staticLayout ? "gap-4" : "justify-between h-full",
+          // justify-center, not justify-between: spreading title and body to
+          // opposite edges left a dead gap down the middle of every card once
+          // the descriptions were short. Centred, the text block hugs its own
+          // content at any card height.
+          staticLayout ? "gap-4" : "h-full justify-center gap-3",
           compact ? "p-6" : "p-8 md:p-[30px]",
           gradient
             ? "bg-surface bg-gradient-to-r from-wash-from to-wash-to"
@@ -84,7 +88,6 @@ export function ServiceCard({
           className={cn(
             "font-display font-medium leading-tight tracking-[-0.96px]",
             "text-[32px] md:text-[40px] relative z-10",
-            !staticLayout && "mb-3",
             compact && "text-[24px] md:text-[28px]",
           )}
         >

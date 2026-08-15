@@ -7,11 +7,26 @@ import { ServiceCard } from "../components/ServiceCard";
 import { usePrefersReducedMotion } from "../lib/use-reduced-motion";
 import { useMediaQuery } from "../lib/use-media-query";
 
+/**
+ * Body copy for this section's intro and outro. Matches the FAQ's answer
+ * styling so both read as the same voice at the same weight.
+ */
+const PHILOSOPHY_BODY = cn(TYPE.body, "text-ink-soft md:text-[20px] md:leading-relaxed");
+
 export function Services() {
   const isDesktop = useMediaQuery("(min-width: 768px)");
+  /**
+   * The pinned panel is a fixed h-screen box holding heading, intro, three
+   * cards and the outro. Below ~700px of viewport height that stack no longer
+   * fits and the outro clips off the bottom — a 1366x768 laptop lands right on
+   * the edge. Short viewports get the normal flowing layout instead, which
+   * cannot clip at any height.
+   */
+  const isTallEnough = useMediaQuery("(min-height: 700px)");
+  const canPin = isDesktop && isTallEnough;
   // Remount on breakpoint change so useScroll re-registers with the right
   // offsets — motion doesn't retarget an existing scroll tracker.
-  return <ServicesInner key={isDesktop ? "pinned" : "flowing"} isDesktop={isDesktop} />;
+  return <ServicesInner key={canPin ? "pinned" : "flowing"} isDesktop={canPin} />;
 }
 
 function ServicesInner({ isDesktop }: { isDesktop: boolean }) {
@@ -45,12 +60,10 @@ function ServicesInner({ isDesktop }: { isDesktop: boolean }) {
           Our Philosophy
         </h2>
 
-        <p
-          className={cn(
-            "max-w-3xl font-body text-muted-ink",
-            pin ? "mb-6 text-base" : "mb-10 text-lg",
-          )}
-        >
+        {/* Same body treatment as the FAQ answers — TYPE.body + text-ink-soft
+            is the house style for section body copy, so this reads as part of
+            the same page rather than a lighter aside. */}
+        <p className={cn(PHILOSOPHY_BODY, "max-w-4xl", pin ? "mb-6" : "mb-10")}>
           {PHILOSOPHY_INTRO}
         </p>
 
@@ -74,7 +87,7 @@ function ServicesInner({ isDesktop }: { isDesktop: boolean }) {
             pin ? "mt-6" : "mt-10",
           )}
         >
-          <span className="font-body text-muted-ink">{PHILOSOPHY_OUTRO}</span>
+          <span className={PHILOSOPHY_BODY}>{PHILOSOPHY_OUTRO}</span>
           <a
             href="#roi-calculator"
             className="inline-flex min-h-11 w-fit items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 font-body text-sm transition-colors hover:border-ink"
