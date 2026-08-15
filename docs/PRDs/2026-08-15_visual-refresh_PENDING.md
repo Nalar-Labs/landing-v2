@@ -1,7 +1,7 @@
 # Plan — Visual refresh from the Aug-9 mockup
 
 Status: **PENDING** — decisions settled, ready to hand to the superpowers skill.
-Last updated 2026-08-14.
+Last updated 2026-08-15.
 
 Source of truth: [`docs/mockups/web-redesign-aug-9.png`](../mockups/web-redesign-aug-9.png).
 
@@ -254,6 +254,7 @@ Steps 2–6 are independent once step 1 lands.
   path is `node --test` over pure logic only. Verification is manual, in-browser.
 - The ROI Calculator itself — separate PRD.
 - The Portfolio rearchitecture — separate PRD, which must also resolve its
-  conflict with [`2026-08-09_portfolio-video_PENDING.md`](2026-08-09_portfolio-video_PENDING.md):
-  that PRD's whole design assumes the carousel survives, and the mockup replaces
-  it with a teaser panel.
+  conflict with [`2026-08-09_portfolio-video_DEVELOPED.md`](2026-08-09_portfolio-video_DEVELOPED.md):
+  that work's whole design assumes the carousel survives, and the mockup replaces
+  it with a teaser panel. Since it is now built, the conflict is with shipped
+  code, not just a plan.
