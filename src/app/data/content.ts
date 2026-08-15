@@ -20,8 +20,8 @@ export const NAV_LINKS: NavLink[] = [
 
 export const HERO = {
   prefix: "We build",
-  cycling: ["World Class", "Beautiful", "Scalable", "Secure", "Customized"],
-  suffix: "software at breakneck speed",
+  cycling: ["world-class", "beautiful", "scalable", "secure", "customized"],
+  suffix: "software at break-neck speed",
   links: [
     { label: "Book a call", href: CALENDLY_URL },
     { label: "Refer a friend", href: "#refer" },
