@@ -3,6 +3,9 @@
 // breaking tests, but the shapes the components rely on must hold.
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { HERO, SERVICES, APPROACH_STEPS, FAQ_ITEMS, NAV_LINKS } from "./content.ts";
 import { SERVICE_CARD_COUNT } from "../lib/service-scroll-sequence.ts";
 
@@ -50,8 +53,19 @@ test("no FAQ answer quotes an hourly rate", () => {
   }
 });
 
-test("every in-page nav link points at a section that exists", () => {
-  // #faq was dead until the FAQ section landed.
-  const inPage = NAV_LINKS.filter((l) => l.href.startsWith("#")).map((l) => l.href);
-  assert.ok(inPage.includes("#faq"));
+test("every in-page nav link points at a section that actually exists", () => {
+  const sectionsDir = fileURLToPath(new URL("../sections/", import.meta.url));
+  const sourceText = readdirSync(sectionsDir)
+    .filter((file) => file.endsWith(".tsx"))
+    .map((file) => readFileSync(join(sectionsDir, file), "utf8"))
+    .join("\n");
+
+  const inPageLinks = NAV_LINKS.filter((link) => link.href.startsWith("#"));
+  for (const link of inPageLinks) {
+    const id = link.href.slice(1);
+    assert.ok(
+      sourceText.includes(`id="${id}"`),
+      `NAV_LINKS has "${link.href}" but no section declares id="${id}"`,
+    );
+  }
 });
