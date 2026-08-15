@@ -46,8 +46,10 @@ export function Hero() {
             <CyclingWord
               words={HERO.cycling}
               className="border-b-2 border-ink md:border-b-[3px]"
-            />{" "}
-            {HERO.suffix}
+            />
+            {/* block, not inline: the suffix always starts its own line,
+                regardless of viewport width or the cycling word's length. */}
+            <span className="block">{HERO.suffix}</span>
           </motion.h1>
 
           <motion.div
