@@ -23,6 +23,10 @@ test("every cycling list has at least two words (a 1-word loop would look broken
   }
 });
 
+test("hero has a non-empty headline (the promoted h1)", () => {
+  assert.ok(HERO.headline.trim().length > 0);
+});
+
 test("SERVICE_CARD_COUNT matches the actual number of services in content", () => {
   const actual = SERVICE_GROUPS.reduce((n, g) => n + g.items.length, 0);
   assert.equal(actual, SERVICE_CARD_COUNT);

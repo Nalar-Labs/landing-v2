@@ -38,22 +38,23 @@ export function Hero() {
         id="home"
         className="relative flex min-h-screen flex-col items-center justify-center px-6 pb-16 pt-32"
       >
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: "easeOut", delay: 0.5 }}
-            className="mb-4 font-body text-xl tracking-[0.02em] md:mb-5 md:text-4xl"
-          >
-            Want to win with AI?
-          </motion.p>
         <div className="w-full max-w-[1400px] text-center">
-          <h1 className={cn(TYPE.hero, "mx-auto mb-10 max-w-[1345px] md:mb-12")}>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className={cn(TYPE.hero, "mx-auto mb-6 max-w-[1345px] md:mb-8")}
+          >
+            {HERO.headline}
+          </motion.h1>
+
+          <p className="mx-auto mb-10 max-w-[900px] font-display text-[20px] font-light leading-snug tracking-[-0.72px] text-ink-soft md:mb-12 md:text-[32px]">
             {HERO.lines.map((line, lineIndex) => (
               <motion.span
                 key={line.static}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: "easeOut", delay: lineIndex * 0.2 }}
+                transition={{ duration: 0.7, ease: "easeOut", delay: 0.3 + lineIndex * 0.15 }}
                 className="block"
               >
                 {line.static}
@@ -63,13 +64,13 @@ export function Hero() {
                     <CyclingWord
                       words={line.cycling}
                       offsetMs={lineIndex * CYCLE_OFFSET_MS}
-                      className="border-b-[3px] border-ink md:border-b-4"
+                      className="border-b-2 border-ink md:border-b-[3px]"
                     />
                   </>
                 )}
               </motion.span>
             ))}
-          </h1>
+          </p>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}

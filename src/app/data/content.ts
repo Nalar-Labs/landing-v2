@@ -26,6 +26,7 @@ export type HeroLine = {
 };
 
 export const HERO = {
+  headline: "Want to win with AI?",
   lines: [
     {
       static: "You don't need more",
@@ -38,7 +39,11 @@ export const HERO = {
     { label: "Book a call", href: CALENDLY_URL },
     { label: "Refer a friend", href: "#refer" },
   ],
-} as const satisfies { lines: readonly HeroLine[]; links: readonly { label: string; href: string }[] };
+} as const satisfies {
+  headline: string;
+  lines: readonly HeroLine[];
+  links: readonly { label: string; href: string }[];
+};
 
 export type Service = {
   title: string;
