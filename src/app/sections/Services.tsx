@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { useScroll } from "motion/react";
+import { ArrowRight } from "lucide-react";
 import { cn, CONTAINER, SECTION, TYPE } from "../lib/layout";
 import { SERVICES } from "../data/content";
 import { ServiceCard } from "../components/ServiceCard";
@@ -35,9 +36,19 @@ function ServicesInner({ isDesktop }: { isDesktop: boolean }) {
     >
       {/* pt-60 clears the fixed navbar while pinned */}
       <div className={pin ? "sticky top-0 flex h-screen flex-col pt-60" : undefined}>
-        <h2 className={pin ? cn(TYPE.h3, "mb-12") : cn(TYPE.h2, SECTION.titleGap)}>
+        {/* mb-6 while pinned (not mb-12): the chip below consumes headroom
+            inside the fixed h-screen panel, and the card grid must still fit. */}
+        <h2 className={pin ? cn(TYPE.h3, "mb-6") : cn(TYPE.h2, SECTION.titleGap)}>
           We help you
         </h2>
+
+        <a
+          href="#roi-calculator"
+          className="mb-4 inline-flex w-fit items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 font-body text-sm transition-colors hover:border-ink"
+        >
+          Use Nalar ROI calculator
+          <ArrowRight className="size-4" aria-hidden />
+        </a>
 
         <div className="grid grid-cols-1 gap-6 auto-rows-fr md:grid-cols-3">
           {SERVICES.map((service, index) => (

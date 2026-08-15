@@ -1,6 +1,7 @@
 import { MotionConfig } from "motion/react";
 import { Navbar } from "./sections/Navbar";
 import { Hero } from "./sections/Hero";
+import { RoiCalculator } from "./sections/RoiCalculator";
 import { Services } from "./sections/Services";
 import { Approach } from "./sections/Approach";
 import { Portfolio } from "./sections/Portfolio";
@@ -20,10 +21,7 @@ export default function App() {
           <Navbar />
           <main>
             <Hero />
-            {/* PRD 2 — the ROI Calculator mounts here, between Hero and
-                Services. Its `#roi-calculator` anchor and the Services chip
-                that links to it ship together with the calculator itself,
-                never before: an anchor to nothing is a dead link. */}
+            <RoiCalculator />
             <Services />
             <Portfolio />
             <Approach />
