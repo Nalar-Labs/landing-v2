@@ -4,6 +4,7 @@ import { Hero } from "./sections/Hero";
 import { Services } from "./sections/Services";
 import { Approach } from "./sections/Approach";
 import { Portfolio } from "./sections/Portfolio";
+import { FAQ } from "./sections/FAQ";
 import { CTA } from "./sections/CTA";
 import { SmoothScroll } from "./lib/smooth-scroll";
 
@@ -25,6 +26,7 @@ export default function App() {
             <Services />
             <Portfolio />
             <Approach />
+            <FAQ />
             <CTA />
           </main>
         </div>

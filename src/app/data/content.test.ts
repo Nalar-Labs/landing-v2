@@ -3,7 +3,7 @@
 // breaking tests, but the shapes the components rely on must hold.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { HERO, SERVICES, APPROACH_STEPS } from "./content.ts";
+import { HERO, SERVICES, APPROACH_STEPS, FAQ_ITEMS, NAV_LINKS } from "./content.ts";
 import { SERVICE_CARD_COUNT } from "../lib/service-scroll-sequence.ts";
 
 test("hero has at least one line and every line has non-empty static copy", () => {
@@ -44,4 +44,26 @@ test("approach steps exist and each has a body (steps list or paragraph)", () =>
     assert.ok(step.title.trim().length > 0);
     assert.ok((step.steps?.length ?? 0) > 0 || (step.paragraph?.length ?? 0) > 0);
   }
+});
+
+test("there are six FAQ items, each with a question and an answer", () => {
+  assert.equal(FAQ_ITEMS.length, 6);
+  for (const item of FAQ_ITEMS) {
+    assert.ok(item.question.trim().length > 0);
+    assert.ok(item.answer.trim().length > 0);
+  }
+});
+
+test("no FAQ answer quotes an hourly rate", () => {
+  // Public-site decision: pricing describes the process, never a number.
+  for (const item of FAQ_ITEMS) {
+    assert.doesNotMatch(item.answer, /\$\s?\d/);
+    assert.doesNotMatch(item.answer, /per hour|\/hour|hourly rate/i);
+  }
+});
+
+test("every in-page nav link points at a section that exists", () => {
+  // #faq was dead until the FAQ section landed.
+  const inPage = NAV_LINKS.filter((l) => l.href.startsWith("#")).map((l) => l.href);
+  assert.ok(inPage.includes("#faq"));
 });

@@ -110,6 +110,49 @@ export const APPROACH_STEPS: ApproachStep[] = [
   },
 ];
 
+export type FaqItem = {
+  question: string;
+  answer: string;
+};
+
+/**
+ * Ordered by what earns trust fastest. No-lock-in sits second, ahead of
+ * pricing, because it reframes everything below it. The last question names
+ * who is *not* a fit, to filter bad-fit leads before they reach the calendar.
+ */
+export const FAQ_ITEMS: FaqItem[] = [
+  {
+    question: "How are you different from a dev shop or agency?",
+    answer:
+      "You work directly with the people building your software — there is no account manager between you and the engineers. We default to open-source tools you own outright, so nothing we build depends on a licence we control.",
+  },
+  {
+    question: "What happens when the project ends — are we stuck with you?",
+    answer:
+      "No. Every engagement ends with a structured handoff: we document what was built, run hands-on sessions with your team, and hand over versioned code and written guides. We use open tools wherever possible, so you are never dependent on a proprietary stack we control. An ongoing retainer is available if you want one — not because you will need it.",
+  },
+  {
+    question: "How does pricing work?",
+    answer:
+      "It starts with a free 30-minute call to understand the problem. If there is a fit, we come back with a recommended approach and a rough scope, then run a detailed planning session that produces a fixed, written proposal. You know the number before any build work begins.",
+  },
+  {
+    question: "Do we need an in-house engineer or IT team?",
+    answer:
+      "No. Most of the teams we work with do not have one — that is usually why they call us. We handle architecture, build, deployment and maintenance, and we train whoever on your team will own the tool day to day.",
+  },
+  {
+    question: "Can AI run privately on our own data?",
+    answer:
+      "Yes. Models can run on infrastructure you control, so sensitive data never leaves your environment. Where a hosted model is the better fit, we are explicit about what gets sent, what is retained, and how to turn that off.",
+  },
+  {
+    question: "What kind of companies do you work with?",
+    answer:
+      "Teams of roughly 10 to 60 people where technology is a means rather than the product — operations, services, manufacturing, education. We are a poor fit if you are a tech company building your own engineering org, or if you already have an in-house team that just needs extra hands.",
+  },
+];
+
 export const CTA = {
   headline: "Let's make your tool your hardest worker",
   buttonLabel: "Book a call",
