@@ -54,6 +54,13 @@ Maintenance is not a guess: it is how many hours a month you agree to give each
 tier, priced at your own consulting rate. That is a business decision, and it is
 defensible precisely because you set it.
 
+**Rejected — hard-code the constants in the component.** Fastest to build, but
+every tuning pass becomes a code change and the provenance disappears.
+
+**Rejected — make the rates CMS-editable via Sveltia.** These change a few times
+a year, not weekly, and exposing pricing logic to a CMS invites an accidental
+commit that silently changes every quote on the site.
+
 ### 2.1 Hosting is a formula, not a research project
 
 **Decision.** Hosting is `MAX(base, users × perUser)` — two numbers, currently
@@ -87,12 +94,6 @@ changes, and nobody will re-derive it.
 not seat count. Seats are an admitted proxy, documented in the Hosting tab, and
 worth revisiting above ~500 users where the per-user term starts to dominate.
 
-**Rejected — hard-code the constants in the component.** Fastest to build, but
-every tuning pass becomes a code change and the provenance disappears.
-
-**Rejected — make the rates CMS-editable via Sveltia.** These change a few times
-a year, not weekly, and exposing pricing logic to a CMS invites an accidental
-commit that silently changes every quote on the site.
 
 ---
 
@@ -142,13 +143,16 @@ count inflate hosting and maintenance, which then get charged against the intern
 SaaS savings — even though a customer-facing web app has nothing to do with
 replacing an HRIS. Measured in the workbook:
 
-| Scenario | ROI |
+| Scenario | ROI, if the two paths were combined |
 |---|---|
-| 2 internal tools, 40 employees, $1,800/mo SaaS | **+346%**, payback 8.1 months |
-| Same, plus one web app at 5,000 users | **−89%**, payback 320 months |
+| 2 internal tools, 40 employees, $1,800/mo SaaS | **+397%**, payback 7.2 months |
+| Same, plus one web app at 5,000 users | **−201%**, no payback at all |
 
-Ticking one extra box destroys the case for a project that got *better*. Showing
-that to a prospect is worse than showing nothing.
+The web app pushes the tier from Medium to High and hosting from $25 to $1,500,
+so the running cost charged against the SaaS savings goes from $585 to $2,340 —
+and monthly "savings" turn *negative*. Ticking one extra box destroys the case
+for a project that got **bigger and better**. Showing that to a prospect is worse
+than showing nothing, which is why the gate exists rather than the combination.
 
 **Rejected — split the running cost by path** (internal hosting sized by
 employees, external by users, savings compared only against the internal share).
@@ -171,21 +175,21 @@ different stories, so the panel resolves into one of two modes.
 
 **Mode A — the ROI story.** Internal-only, replacing SaaS:
 
-> ### Pays for itself in 8 months
-> New monthly cost **$710** · You save **$1,090/mo** · **$30,440** over 3 years
+> ### Pays for itself in 7 months
+> New monthly cost **$585** · You save **$1,215/mo** · **$34,940** over 3 years
 
 **Mode B — the agency story.** Everything else:
 
 > ### You'd pay 55% of agency rates
-> Build time **3 months** · New monthly cost **$1,740**
+> Build time **3 months** · New monthly cost **$2,340**
 
 Mode B is the fallback *and* a strong pitch on its own, which is what makes
 gating Mode A cheap. `% of agency` works on every path, needs no invented revenue
 assumptions, and comes from a real benchmark. It is also where the mockup's "50%"
 came from: High tier against the agency rate is 54.9%.
 
-**Whenever ROI % is shown, the horizon is shown beside it.** 346% over 36 months
-is 49% over 12. An unlabelled percentage reads as invented.
+**Whenever ROI % is shown, the horizon is shown beside it.** 397% over 36 months
+is 66% over 12. An unlabelled percentage reads as invented.
 
 **Resting state.** Before Calculate, the panel shows the agency comparison as a
 teaser, never a blank box.
@@ -230,7 +234,7 @@ sentence rather than a number:
 | Not currently paying for software | Mode B — no savings to claim |
 | Any external app ticked | Mode B |
 | New monthly cost ≥ current spend | `"No payback"` — never a negative |
-| Payback exceeds the horizon | `"Beyond 3 years"` — never `320 months` |
+| Payback exceeds the horizon | `"Beyond 3 years"` — never a raw figure in the hundreds of months |
 | Zero or non-numeric spend | Treated as no spend → Mode B |
 
 **Currency is USD only in v1.** The mockup's `USD` control renders as a static
@@ -264,7 +268,7 @@ repo, where component behaviour has no automated path at all.
 - `src/app/data/roi.test.ts` — run with
   `node --test --experimental-strip-types src/app/data/roi.test.ts`.
 - Cover every row of §7, plus the two §4 scenarios as regression cases: the
-  −89% mixed-pick result must never reach a user again.
+  −201% mixed-pick result must never reach a user again.
 
 The form, the two-mode panel, and the mobile scroll behaviour have **no automated
 coverage** and are verified manually. Do not claim otherwise.
@@ -293,9 +297,10 @@ UI is presentational.
 |---|---|
 | **Hosting is an admitted estimate**, so a technical prospect may challenge it. | It is the smallest term in the comparison (§2.1), so challenging it barely moves the headline. Present it as an estimate, not a quote. Two cells to correct. |
 | A confident wrong number is worse than no calculator. | Label output as an estimate; every figure resolves on the call. Guards in §7 prevent absurd values. |
-| ROI % is highly horizon-sensitive (346% at 36mo, 49% at 12mo). | Never render the percentage without the horizon beside it. |
+| ROI % is highly horizon-sensitive (397% at 36mo, 66% at 12mo). | Never render the percentage without the horizon beside it. |
 | Mode B is the fallback for several distinct conditions, so a visitor may expect a savings figure and not get one. | Mode B states *why* in a sentence ("you're not replacing existing software"), rather than silently omitting. |
 | Real hosting cost tracks traffic and data, not seat count. | Documented in the Hosting tab. Seats are an admitted proxy; revisit above ~500 users, where the per-user term starts to dominate. |
+| **Tier bands still have a cliff, and it is visible publicly.** At 100 users the tier is Medium and `% of agency` reads 37.7%; at 101 it is High and reads 54.9%. One extra employee moves the headline 17 points. | Accepted, not fixed: tiering price by project size is a real commercial concept, unlike stepping a continuous infra cost. Keep the band edges away from round numbers a visitor would land on deliberately, and never show two figures side by side that straddle one. |
 | The chip in PRD 1 becomes a dead link if ordering slips. | Gate it on this section existing (PRD 1 §9). |
 
 ---
