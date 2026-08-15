@@ -6,9 +6,6 @@ import { cn, TYPE } from "../lib/layout";
 import { CALENDLY_URL, HERO } from "../data/content";
 import { CyclingWord } from "../components/CyclingWord";
 
-/** Line 2's cycle fires this long after Line 1's (spec: ~600ms offset). */
-const CYCLE_OFFSET_MS = 600;
-
 export function Hero() {
   const [isReferModalOpen, setIsReferModalOpen] = useState(false);
   const [email, setEmail] = useState("");
@@ -43,34 +40,15 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className={cn(TYPE.hero, "mx-auto mb-6 max-w-[1345px] md:mb-8")}
+            className={cn(TYPE.hero, "mx-auto mb-10 max-w-[1345px] md:mb-12")}
           >
-            {HERO.headline}
+            {HERO.prefix}{" "}
+            <CyclingWord
+              words={HERO.cycling}
+              className="border-b-2 border-ink md:border-b-[3px]"
+            />{" "}
+            {HERO.suffix}
           </motion.h1>
-
-          <p className="mx-auto mb-10 max-w-[900px] font-display text-[20px] font-light leading-snug tracking-[-0.72px] text-ink-soft md:mb-12 md:text-[32px]">
-            {HERO.lines.map((line, lineIndex) => (
-              <motion.span
-                key={line.static}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, ease: "easeOut", delay: 0.3 + lineIndex * 0.15 }}
-                className="block"
-              >
-                {line.static}
-                {line.cycling && (
-                  <>
-                    {" "}
-                    <CyclingWord
-                      words={line.cycling}
-                      offsetMs={lineIndex * CYCLE_OFFSET_MS}
-                      className="border-b-2 border-ink md:border-b-[3px]"
-                    />
-                  </>
-                )}
-              </motion.span>
-            ))}
-          </p>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}

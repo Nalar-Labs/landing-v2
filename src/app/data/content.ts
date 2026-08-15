@@ -18,30 +18,18 @@ export const NAV_LINKS: NavLink[] = [
   { label: "Book A Free Session", href: "#contact", accent: true },
 ];
 
-export type HeroLine = {
-  /** The part of the line that never changes. */
-  static: string;
-  /** Words the trailing slot loops through; omit for a fully static line. */
-  cycling?: readonly string[];
-};
-
 export const HERO = {
-  headline: "Want to win with AI?",
-  lines: [
-    {
-      static: "You don't need more",
-      cycling: ["SaaS", "Tokens", "Tools", "Developers", "Consultants", "Designers"],
-    },
-
-    { static: "You just need partners who have built great products." },
-  ],
+  prefix: "We build",
+  cycling: ["World Class", "Beautiful", "Scalable", "Secure", "Customized"],
+  suffix: "software at breakneck speed",
   links: [
     { label: "Book a call", href: CALENDLY_URL },
     { label: "Refer a friend", href: "#refer" },
   ],
 } as const satisfies {
-  headline: string;
-  lines: readonly HeroLine[];
+  prefix: string;
+  cycling: readonly string[];
+  suffix: string;
   links: readonly { label: string; href: string }[];
 };
 
