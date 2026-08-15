@@ -7,7 +7,7 @@
     "node": ">=22.6.0"
   },
   "scripts": {
-    "build": "node --test --experimental-strip-types src/app/data/*.test.ts && vite build",
+    "build": "node --test --experimental-strip-types src/app/**/*.test.ts && vite build",
     "dev": "vite"
   },
   "dependencies": {
