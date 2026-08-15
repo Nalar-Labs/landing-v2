@@ -54,7 +54,7 @@ export function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="fixed inset-0 z-40 flex flex-col justify-center bg-white px-6 md:px-12"
+            className="fixed inset-0 z-40 flex flex-col justify-center bg-page px-6 md:px-12"
           >
             <div className="flex flex-col space-y-4 font-display text-[32px] font-light leading-tight tracking-[-0.96px] md:text-[56px] md:tracking-[-1.68px]">
               {NAV_LINKS.map((link) => (

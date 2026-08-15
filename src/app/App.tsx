@@ -14,7 +14,7 @@ export default function App() {
         {/* overflow-x-clip (not -hidden): hidden creates a scroll container,
             which silently disables position:sticky for every descendant —
             the Services section relies on sticky for its scroll-pin. */}
-        <div className="min-h-screen overflow-x-clip bg-white font-display text-black selection:bg-brand selection:text-white">
+        <div className="min-h-screen overflow-x-clip bg-page font-display text-black selection:bg-brand selection:text-white">
           <Navbar />
           <main>
             <Hero />

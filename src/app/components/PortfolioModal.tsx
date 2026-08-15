@@ -75,7 +75,7 @@ export function PortfolioModal({
             ) : (
               <div
                 aria-hidden="true"
-                className="aspect-[21/9] w-full bg-gradient-to-br from-[#3c3c3c33] to-[#ffffff33]"
+                className="aspect-[21/9] w-full bg-gradient-to-br from-wash-from to-wash-to"
               />
             )}
             <article className="p-8 md:p-12">

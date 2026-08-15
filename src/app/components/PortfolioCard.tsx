@@ -122,7 +122,7 @@ export function PortfolioCard({
       ) : (
         <div
           aria-hidden="true"
-          className="aspect-[16/10] w-full bg-gradient-to-br from-[#3c3c3c33] to-[#ffffff33]"
+          className="aspect-[16/10] w-full bg-gradient-to-br from-wash-from to-wash-to"
         />
       )}
 

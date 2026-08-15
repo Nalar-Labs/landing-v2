@@ -71,7 +71,7 @@ export function ServiceCard({
           staticLayout ? "gap-4" : "justify-between h-full",
           compact ? "p-6" : "p-8 md:p-[30px]",
           gradient
-            ? "bg-surface bg-gradient-to-r from-[#3c3c3c33] to-[#ffffff33]"
+            ? "bg-surface bg-gradient-to-r from-wash-from to-wash-to"
             : "bg-surface",
         )}
       >

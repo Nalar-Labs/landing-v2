@@ -47,9 +47,16 @@
   --nalar-brand-hover: #ff7a33;  /* accent hover */
   --nalar-ink: #1e1e1e;          /* near-black active/foreground */
   --nalar-ink-soft: #3c3c3c;     /* soft dark (pills) */
-  --nalar-surface: #f8f8f8;      /* card / muted surface */
+  --nalar-page: #f2f2f2;         /* page background */
+  --nalar-surface: #ffffff;      /* card / panel surface (was #f8f8f8) */
   --nalar-muted-ink: #9a9a9a;    /* secondary text on light */
   --nalar-line: #d9d9d9;         /* hairline / timeline stroke */
+
+  /* Accent wash for gradient cards. Re-derived for a WHITE surface: the old
+     #ffffff33 stop was invisible once the surface beneath it turned white,
+     so this fades grey out to fully transparent instead. */
+  --nalar-wash-from: rgba(60, 60, 60, 0.16);
+  --nalar-wash-to: rgba(60, 60, 60, 0);
 
   /* Type families */
   --nalar-font-display: "Public Sans", ui-sans-serif, system-ui, sans-serif;
@@ -140,7 +147,10 @@
   --color-brand-hover: var(--nalar-brand-hover);
   --color-ink: var(--nalar-ink);
   --color-ink-soft: var(--nalar-ink-soft);
+  --color-page: var(--nalar-page);
   --color-surface: var(--nalar-surface);
+  --color-wash-from: var(--nalar-wash-from);
+  --color-wash-to: var(--nalar-wash-to);
   --color-muted-ink: var(--nalar-muted-ink);
   --color-line: var(--nalar-line);
   --radius-card: 30px;

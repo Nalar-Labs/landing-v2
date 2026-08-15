@@ -66,7 +66,7 @@ export function VideoFacade({
           ) : (
             <div
               aria-hidden="true"
-              className="absolute inset-0 bg-gradient-to-br from-[#3c3c3c33] to-[#ffffff33]"
+              className="absolute inset-0 bg-gradient-to-br from-wash-from to-wash-to"
             />
           )}
           <button
