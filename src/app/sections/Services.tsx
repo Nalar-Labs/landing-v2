@@ -3,7 +3,6 @@ import { useScroll } from "motion/react";
 import { cn, CONTAINER, SECTION, TYPE } from "../lib/layout";
 import { SERVICES } from "../data/content";
 import { ServiceCard } from "../components/ServiceCard";
-import { SERVICE_CARD_COUNT } from "../lib/service-scroll-sequence";
 import { usePrefersReducedMotion } from "../lib/use-reduced-motion";
 import { useMediaQuery } from "../lib/use-media-query";
 
@@ -52,7 +51,6 @@ function ServicesInner({ isDesktop }: { isDesktop: boolean }) {
               key={service.title}
               {...service}
               index={index}
-              cardCount={SERVICE_CARD_COUNT}
               scrollYProgress={scrollYProgress}
               reducedMotion={reducedMotion}
               compact={pin}

@@ -1,13 +1,12 @@
 import { motion, useTransform, type MotionValue } from "motion/react";
 import { cn, TYPE } from "../lib/layout";
 import type { Service } from "../data/content";
-import { getCardExpansion } from "../lib/service-scroll-sequence";
+import { getServiceCardExpansion } from "../lib/service-scroll-sequence";
 import { SERVICE_CARD_GRADIENTS } from "../lib/service-gradients";
 
 type ServiceCardProps = Service & {
-  /** This card's position among all 6 Services cards (0-5), reading order. */
+  /** This card's position among the Services cards, reading order. */
   index: number;
-  cardCount: number;
   /** Shared 0-1 progress for the whole Services section, from Services.tsx. */
   scrollYProgress: MotionValue<number>;
   reducedMotion: boolean;
@@ -43,7 +42,6 @@ export function ServiceCard({
   description,
   gradient = false,
   index,
-  cardCount,
   scrollYProgress,
   reducedMotion,
   compact = false,
@@ -53,7 +51,7 @@ export function ServiceCard({
   const staticLayout = reducedMotion || !scrollDriven;
 
   const expansion = useTransform(scrollYProgress, (progress) =>
-    getCardExpansion(progress, index, cardCount),
+    getServiceCardExpansion(progress, index),
   );
   const height = useTransform(expansion, [0, 1], [collapsed, expanded]);
   const washOpacity = useTransform(expansion, [0, 1], [0, 0.92]);

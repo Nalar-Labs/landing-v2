@@ -58,21 +58,31 @@ export function getCardIntensity(
   return result;
 }
 
-export function getCardExpansion(
-  progress: number,
-  index: number,
-  count: number = SERVICE_CARD_COUNT,
-): number {
-  if (count !== SERVICE_CARD_COUNT) {
-    const band = 1 / count;
-    const start = index * band;
-    const rampEnd = start + band * 0.6;
+/**
+ * Returns 0-1: how "expanded" a card should be at the given scroll
+ * `progress`, using a generic per-count band ramp. `count` has no default —
+ * every caller must be explicit, because a default tied to
+ * SERVICE_CARD_COUNT previously collided silently with ApproachItem's
+ * stepCount once both happened to equal 3. Reused by ApproachItem's
+ * timeline; Services cards use getServiceCardExpansion instead, below.
+ */
+export function getCardExpansion(progress: number, index: number, count: number): number {
+  const band = 1 / count;
+  const start = index * band;
+  const rampEnd = start + band * 0.6;
 
-    if (progress <= start) return 0;
-    if (progress >= rampEnd) return 1;
-    return (progress - start) / (rampEnd - start);
-  }
+  if (progress <= start) return 0;
+  if (progress >= rampEnd) return 1;
+  return (progress - start) / (rampEnd - start);
+}
 
+/**
+ * Returns 0-1: how "expanded" the Services card at `index` should be at the
+ * given scroll `progress`. Always exactly SERVICE_CARD_COUNT (3) cards with
+ * hand-tuned windows — there is no generic/count-based path here, so this
+ * can never collide with another reuse of getCardExpansion's math.
+ */
+export function getServiceCardExpansion(progress: number, index: number): number {
   const [start, end] = CARD_WINDOWS[index];
   return inverseLerp(start, end, progress);
 }

@@ -4,6 +4,7 @@ import {
   SERVICE_CARD_COUNT,
   getCardIntensity,
   getCardExpansion,
+  getServiceCardExpansion,
 } from "./service-scroll-sequence.ts";
 
 test("SERVICE_CARD_COUNT is 3 (one trio of service cards)", () => {
@@ -40,24 +41,41 @@ test("getCardIntensity works for an arbitrary count (Approach steps reuse it)", 
   assert.equal(getCardIntensity(0.99, 2, 3) > 0, true);
 });
 
-test("getCardExpansion is 0 before a card's window starts", () => {
+test("getCardExpansion is a generic per-count band ramp, independent of SERVICE_CARD_COUNT", () => {
+  // 3 steps (same count as SERVICE_CARD_COUNT, by coincidence -- this is the
+  // exact collision that used to make Approach silently inherit Services'
+  // hand-tuned CARD_WINDOWS). band = 1/3, step 0's ramp is [0, 0.2].
+  assert.equal(getCardExpansion(0, 0, 3), 0);
+  // 0.1 / (1/3 * 0.6) isn't exactly 0.5 in floating point (same class of
+  // imprecision as the getCardIntensity ramp test above), so use a tolerance.
+  assert.ok(Math.abs(getCardExpansion(0.1, 0, 3) - 0.5) < 1e-9);
+  assert.equal(getCardExpansion(0.25, 0, 3), 1);
+});
+
+test("getCardExpansion works for a count that differs from SERVICE_CARD_COUNT too", () => {
+  // 5 steps: band = 0.2, step 1's ramp is [0.2, 0.32]
+  assert.equal(getCardExpansion(0.2, 1, 5), 0);
+  assert.equal(getCardExpansion(0.32, 1, 5), 1);
+});
+
+test("getServiceCardExpansion is 0 before a card's window starts", () => {
   // card 1's window is [0.3, 0.6]
-  assert.equal(getCardExpansion(0.29, 1), 0);
+  assert.equal(getServiceCardExpansion(0.29, 1), 0);
 });
 
-test("getCardExpansion ramps linearly across a card's window", () => {
+test("getServiceCardExpansion ramps linearly across a card's window", () => {
   // card 0's window is [0, 0.3]; halfway through is 0.5
-  assert.equal(getCardExpansion(0.15, 0), 0.5);
+  assert.equal(getServiceCardExpansion(0.15, 0), 0.5);
 });
 
-test("getCardExpansion holds at 1 after its window (cards stay expanded)", () => {
-  assert.equal(getCardExpansion(0.95, 0), 1);
-  assert.equal(getCardExpansion(1, 2), 1);
+test("getServiceCardExpansion holds at 1 after its window (cards stay expanded)", () => {
+  assert.equal(getServiceCardExpansion(0.95, 0), 1);
+  assert.equal(getServiceCardExpansion(1, 2), 1);
 });
 
-test("every card is fully expanded by the end of the scroll", () => {
+test("every service card is fully expanded by the end of the scroll", () => {
   for (let i = 0; i < SERVICE_CARD_COUNT; i += 1) {
-    assert.equal(getCardExpansion(1, i), 1);
+    assert.equal(getServiceCardExpansion(1, i), 1);
   }
 });
 
