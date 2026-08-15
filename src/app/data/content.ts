@@ -158,3 +158,20 @@ export const CTA = {
   buttonLabel: "Book a call",
   href: CALENDLY_URL,
 } as const;
+
+/**
+ * Temporary destination for social links that have no page yet. Both
+ * LinkedIn and Twitter point here so swapping them later is a one-line
+ * change. These are knowingly dead links until then.
+ */
+export const PLACEHOLDER_URL = "#";
+
+export const FOOTER = {
+  links: [
+    { label: "Contact", href: CALENDLY_URL },
+    { label: "LinkedIn", href: PLACEHOLDER_URL },
+    { label: "Twitter", href: PLACEHOLDER_URL },
+  ],
+  blurb:
+    'Nalar is a collective design engineering lab run by people from Indonesia across the world, where Nalar means "makes sense".',
+} as const;

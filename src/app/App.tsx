@@ -6,6 +6,7 @@ import { Approach } from "./sections/Approach";
 import { Portfolio } from "./sections/Portfolio";
 import { FAQ } from "./sections/FAQ";
 import { CTA } from "./sections/CTA";
+import { Footer } from "./sections/Footer";
 import { SmoothScroll } from "./lib/smooth-scroll";
 
 export default function App() {
@@ -29,6 +30,7 @@ export default function App() {
             <FAQ />
             <CTA />
           </main>
+          <Footer />
         </div>
       </SmoothScroll>
     </MotionConfig>
