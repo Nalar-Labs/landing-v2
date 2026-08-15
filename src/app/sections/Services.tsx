@@ -35,13 +35,7 @@ function ServicesInner({ isDesktop }: { isDesktop: boolean }) {
     >
       {/* pt-60 clears the fixed navbar while pinned */}
       <div className={pin ? "sticky top-0 flex h-screen flex-col pt-60" : undefined}>
-        <h2
-          className={
-            pin
-              ? "font-display text-[64px] font-light leading-[1.05] tracking-[-1.92px] mb-12"
-              : cn(TYPE.h2, SECTION.titleGap)
-          }
-        >
+        <h2 className={pin ? cn(TYPE.h3, "mb-12") : cn(TYPE.h2, SECTION.titleGap)}>
           We help you
         </h2>
 

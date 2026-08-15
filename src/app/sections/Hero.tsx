@@ -67,7 +67,7 @@ export function Hero() {
                   onClick={handleLinkClick(link.href)}
                   target={isExternal ? "_blank" : undefined}
                   rel={isExternal ? "noreferrer" : undefined}
-                  className="group inline-flex items-center gap-3 rounded-full border border-black/45 bg-white px-8 py-4 transition-colors hover:border-black"
+                  className="group inline-flex items-center gap-3 rounded-full border border-black/45 bg-surface px-8 py-4 transition-colors hover:border-black"
                 >
                   <span>{link.label}</span>
                   <span className="flex size-8 items-center justify-center rounded-full bg-black text-white transition-transform group-hover:scale-105">

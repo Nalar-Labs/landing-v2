@@ -6,7 +6,7 @@ import bottomBg from "../../imports/bottom_section.svg";
 export function CTA() {
   return (
     <section id="contact" className={cn(CONTAINER, SECTION.wrap)}>
-      <div className="relative flex aspect-square flex-col items-center justify-center overflow-hidden rounded-card bg-black p-8 text-center text-white md:aspect-[2.2/1]">
+      <div className="relative flex aspect-square flex-col items-center justify-center overflow-hidden rounded-card bg-ink p-8 text-center text-white md:aspect-[2.2/1]">
         {/* Background image (carries its own dark wash) */}
         <img
           src={bottomBg}
