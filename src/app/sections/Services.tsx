@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { useScroll } from "motion/react";
 import { ArrowRight } from "lucide-react";
 import { cn, CONTAINER, SECTION, TYPE } from "../lib/layout";
-import { SERVICES } from "../data/content";
+import { PHILOSOPHY_INTRO, PHILOSOPHY_OUTRO, SERVICES } from "../data/content";
 import { ServiceCard } from "../components/ServiceCard";
 import { usePrefersReducedMotion } from "../lib/use-reduced-motion";
 import { useMediaQuery } from "../lib/use-media-query";
@@ -34,21 +34,25 @@ function ServicesInner({ isDesktop }: { isDesktop: boolean }) {
       ref={trackRef}
       className={cn(CONTAINER, pin ? "h-[260vh]" : SECTION.wrap)}
     >
-      {/* pt-60 clears the fixed navbar while pinned */}
-      <div className={pin ? "sticky top-0 flex h-screen flex-col pt-60" : undefined}>
-        {/* mb-6 while pinned (not mb-12): the chip below consumes headroom
-            inside the fixed h-screen panel, and the card grid must still fit. */}
-        <h2 className={pin ? cn(TYPE.h3, "mb-6") : cn(TYPE.h2, SECTION.titleGap)}>
-          We help you
+      {/* pt-36 clears the fixed navbar while pinned. Was pt-60, but the panel
+          is a fixed h-screen box and now also carries the intro and outro —
+          at 240px of top padding the outro clipped below a ~713px viewport,
+          which a 1366x768 laptop hits. */}
+      <div className={pin ? "sticky top-0 flex h-screen flex-col pt-36" : undefined}>
+        {/* Tighter margins while pinned: the intro and outro below both consume
+            headroom inside the fixed h-screen panel, and the cards must still fit. */}
+        <h2 className={pin ? cn(TYPE.h3, "mb-4") : cn(TYPE.h2, "mb-6")}>
+          Our Philosophy
         </h2>
 
-        <a
-          href="#roi-calculator"
-          className="mb-4 inline-flex w-fit items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 font-body text-sm transition-colors hover:border-ink"
+        <p
+          className={cn(
+            "max-w-3xl font-body text-muted-ink",
+            pin ? "mb-6 text-base" : "mb-10 text-lg",
+          )}
         >
-          Use Nalar ROI calculator
-          <ArrowRight className="size-4" aria-hidden />
-        </a>
+          {PHILOSOPHY_INTRO}
+        </p>
 
         <div className="grid grid-cols-1 gap-6 auto-rows-fr md:grid-cols-3">
           {SERVICES.map((service, index) => (
@@ -62,6 +66,22 @@ function ServicesInner({ isDesktop }: { isDesktop: boolean }) {
               scrollDriven={pin}
             />
           ))}
+        </div>
+
+        <div
+          className={cn(
+            "flex flex-wrap items-center gap-3",
+            pin ? "mt-6" : "mt-10",
+          )}
+        >
+          <span className="font-body text-muted-ink">{PHILOSOPHY_OUTRO}</span>
+          <a
+            href="#roi-calculator"
+            className="inline-flex min-h-11 w-fit items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 font-body text-sm transition-colors hover:border-ink"
+          >
+            Use the Nalar ROI Calculator
+            <ArrowRight className="size-4" aria-hidden />
+          </a>
         </div>
       </div>
     </section>

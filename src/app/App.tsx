@@ -21,8 +21,8 @@ export default function App() {
           <Navbar />
           <main>
             <Hero />
-            <RoiCalculator />
             <Services />
+            <RoiCalculator />
             <Portfolio />
             <Approach />
             <FAQ />

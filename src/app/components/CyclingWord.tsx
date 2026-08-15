@@ -4,9 +4,9 @@ import { cn } from "../lib/layout";
 import { usePrefersReducedMotion } from "../lib/use-reduced-motion";
 
 /** How long each word holds before transitioning out. */
-const HOLD_MS = 2000;
+const HOLD_MS = 1200;
 /** Fade/slide transition duration (spec: ~300ms ease-out). */
-const TRANSITION_S = 0.3;
+const TRANSITION_S = 0.25;
 
 type CyclingWordProps = {
   words: readonly string[];

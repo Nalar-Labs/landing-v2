@@ -12,16 +12,16 @@ export const CALENDLY_URL = "https://calendly.com/garda4199/30min";
 
 export const NAV_LINKS: NavLink[] = [
   { label: "Home", href: "#home" },
-  { label: "We Help You", href: "#services" },
+  { label: "Our Philosophy", href: "#services" },
   { label: "Portfolio", href: "#portfolio" },
   { label: "FAQ", href: "#faq" },
   { label: "Book A Free Session", href: "#contact", accent: true },
 ];
 
 export const HERO = {
-  prefix: "We build custom",
+  prefix: "We make custom",
   cycling: ["agents", "systems", "software", "tools", "platforms","apps"],
-  suffix: "better and faster",
+  suffix: "better. safer. faster. ",
   links: [
     { label: "Book a call", href: CALENDLY_URL },
     { label: "Refer a friend", href: "#refer" },
@@ -41,26 +41,32 @@ export type Service = {
   gradient?: boolean;
 };
 
+/** Sits between the section heading and the cards, framing the three points. */
+export const PHILOSOPHY_INTRO =
+  "Nalar in Bahasa means “common sense”. Because of AI, we believe the old way of building software stops making sense — and here's why:";
+
+/** Closes the section and hands off to the calculator. */
+export const PHILOSOPHY_OUTRO = "Don't believe us?";
+
 /**
- * One trio, mixed from the two former groups. Cut from six per the Aug-9
- * redesign: the group sub-headings had nothing left to distinguish once a
- * single group remained.
+ * The three philosophy points. They render as the section's cards, so the
+ * scroll-pin animation — which is built for exactly three — still applies.
  */
 export const SERVICES: Service[] = [
   {
-    title: "Replace SaaS with Open Source",
+    title: "SaaS Should be Dead",
     description:
-      "Quit paying for software you don't control, we can help build your own bespoke software using open source tools that are free to use and modify.",
+      "Why pay for expensive software subscriptions when you can build it yourself, own all the code, and customize freely at a fraction of the cost.",
   },
   {
-    title: "Replace Vendors with Agents",
+    title: "Data Should be Yours",
     description:
-      "Instead of hiring expensive vendors, we help you build custom AI agents that work for you 24/7 for almost any task such as design, finance, and yes even software development.",
+      "Why give your data away to frontier labs or software vendors. Protect your most valuable business asset.",
   },
   {
-    title: "Cost Free Maintenance & Instant Handoff",
+    title: "Things Should Move 10x Faster",
     description:
-      "We document what was built, train your team, and hand over open tools you own outright — so you are never locked into a stack we control.",
+      "Don't wait a month for a new design, or spend three months building an MVP. AI has completely upended the speed of shipping software.",
     gradient: true,
   },
 ];
