@@ -13,14 +13,14 @@ footer.
 
 ## 1. Scope
 
-The mockup covers three separable bodies of work. They are **three PRDs**, not
-one, so each can ship independently:
+The mockup was split into three separable bodies of work. Two are being built,
+as separate PRDs so each ships independently; the third was dropped:
 
 | PRD | Covers |
 |---|---|
 | **This one** | Hero, Services, surface tokens, section order, FAQ, Footer |
 | ROI Calculator | The calculator card and its business logic |
-| Portfolio rearchitecture | The dark teaser panel, image constellation, "Learn more" |
+| ~~Portfolio rearchitecture~~ | **Dropped** — the carousel stays. See §2.1 |
 
 **Out of scope here.** This PRD only *reserves the slot* where the ROI Calculator
 lands (an `#roi-calculator` anchor between Hero and Services). It does not build
@@ -47,6 +47,31 @@ Hero → [#roi-calculator slot] → Services → Portfolio → Approach → FAQ 
 
 Two moves from today: **Portfolio rises above Approach** (proof before process),
 and **FAQ is inserted above the CTA**.
+
+### 2.1 Portfolio keeps its current carousel
+
+**Decision.** Portfolio **moves** in the running order but is otherwise
+**unchanged** — the existing carousel, modal, video and image gallery all stay
+exactly as they are. The mockup's dark teaser panel is deliberately not built.
+
+This is the one place the redesign knowingly diverges from the mockup, so it is
+recorded here rather than left to be rediscovered by whoever next compares the
+two.
+
+**Rejected — the mockup's teaser panel** (black panel, image constellation,
+floating serif questions, "Learn more" link). Three reasons:
+
+1. **It would throw away working, shipped code.** The video carousel and gallery
+   are `DEVELOPED` — built and merged. Replacing them with a teaser is a net
+   deletion of the only interactive proof on the page.
+2. **The teaser implies a destination that does not exist.** "Learn more" needs a
+   portfolio index page or route; none is planned, so the panel would either dead-
+   end or need a second feature built to support it.
+3. **The serif questions are not in the design system**, which is Public Sans
+   only, and the panel is closely modelled on another company's homepage.
+
+**If it is revisited**, the blocker to solve first is the destination — a teaser
+is only worth building once there is somewhere for it to lead.
 
 ---
 
@@ -253,8 +278,7 @@ Steps 2–6 are independent once step 1 lands.
 - **No automated tests.** Every change here is presentational; the repo's test
   path is `node --test` over pure logic only. Verification is manual, in-browser.
 - The ROI Calculator itself — separate PRD.
-- The Portfolio rearchitecture — separate PRD, which must also resolve its
-  conflict with [`2026-08-09_portfolio-video_DEVELOPED.md`](2026-08-09_portfolio-video_DEVELOPED.md):
-  that work's whole design assumes the carousel survives, and the mockup replaces
-  it with a teaser panel. Since it is now built, the conflict is with shipped
-  code, not just a plan.
+- **The Portfolio rearchitecture is not happening.** There is no third PRD. The
+  section keeps the carousel shipped in
+  [`2026-08-09_portfolio-video_DEVELOPED.md`](2026-08-09_portfolio-video_DEVELOPED.md);
+  reasoning in §2.1. The redesign is therefore **two PRDs, not three**.

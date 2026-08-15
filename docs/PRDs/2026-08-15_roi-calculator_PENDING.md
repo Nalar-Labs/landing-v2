@@ -14,13 +14,13 @@ for you?" into a credible savings figure, and turns that figure into a booked ca
 
 ## 1. Scope and dependencies
 
-PRD 2 of 3 for the Aug-9 redesign.
+PRD 2 of 2 for the Aug-9 redesign.
 
 | PRD | Status |
 |---|---|
 | [Visual refresh](2026-08-15_visual-refresh_PENDING.md) | Written. **Blocks this one.** |
 | **This one** — ROI Calculator | Here |
-| Portfolio rearchitecture | Not written |
+| Portfolio rearchitecture | **Not happening** — section keeps its carousel (PRD 1 §2.1) |
 
 **Hard dependency on PRD 1.** It inverts the surface palette (page `#f2f2f2`,
 `--nalar-surface` white) and reserves the `#roi-calculator` anchor. This card is
