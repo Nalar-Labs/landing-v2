@@ -4,6 +4,7 @@ import { motion, useTransform } from "motion/react";
 import { cn, CONTAINER, SECTION, TYPE } from "../lib/layout";
 import { useMediaQuery } from "../lib/use-media-query";
 import { PIN_PANEL, PIN_TRACK, usePinDecision, usePinnedTrack } from "../lib/use-pinned-section";
+import { revealClipPath } from "../lib/roi-reveal";
 import { RoiForm } from "../components/RoiForm";
 import { RoiResult } from "../components/RoiResult";
 import { ROI_COPY } from "../data/roi-copy";
@@ -18,9 +19,12 @@ const EMPTY: RoiInputs = {
 };
 
 export function RoiCalculator() {
-  // 820px: the panel holds a heading plus the two-column card, which is taller
-  // than the philosophy cards. Below that it would clip, so it flows instead.
-  const pin = usePinDecision(820);
+  // 700px, measured, not guessed: the panel needs 128px of navbar clearance +
+  // a 67px heading + a 32px gap + the card, and the card's worst case — every
+  // conditional field shown and a result rendered — is 426px. That is 653px,
+  // so 700 leaves a small margin. An earlier 820 was pure over-caution and
+  // meant the section silently never pinned on a normal laptop window.
+  const pin = usePinDecision(700);
   // Remount on the decision so useScroll re-registers with the right offsets.
   return <RoiCalculatorInner key={pin ? "pinned" : "flowing"} pin={pin} />;
 }
@@ -36,13 +40,18 @@ function RoiCalculatorInner({ pin }: { pin: boolean }) {
   const lenis = useLenis();
 
   const { trackRef, scrollYProgress } = usePinnedTrack(pin);
-  // Fully wiped open by 60% of the track, leaving the rest of the scroll to
-  // read and use the calculator before the page moves on to Portfolio.
-  const revealClip = useTransform(
-    scrollYProgress,
-    [0, 0.6],
-    ["inset(0 0 100% 0)", "inset(0 0 0% 0)"],
-  );
+  /**
+   * Wipes open across the first 30% of the track, then stays open for the
+   * remaining 70% — the same shape as a Services card, which ramps over its
+   * own window and then holds at fully expanded for the rest of the scroll.
+   * It must never close again on the way down.
+   *
+   * The inset string is computed from a clamped number rather than handed to
+   * useTransform as two `inset()` strings to interpolate between: string
+   * interpolation of clip-path is unreliable and can jump between endpoints
+   * instead of gliding.
+   */
+  const revealClip = useTransform(scrollYProgress, revealClipPath);
 
   // Any edit to the form invalidates the displayed result: without this, the
   // panel keeps showing figures for a selection the visitor has since

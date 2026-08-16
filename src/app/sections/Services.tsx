@@ -63,9 +63,13 @@ function ServicesInner({ isDesktop }: { isDesktop: boolean }) {
         {/* Same body treatment as the FAQ answers — TYPE.body + text-ink-soft
             is the house style for section body copy, so this reads as part of
             the same page rather than a lighter aside. */}
-        <p className={cn(PHILOSOPHY_BODY, "max-w-4xl", pin ? "mb-6" : "mb-10")}>
-          {PHILOSOPHY_INTRO}
-        </p>
+        <div className={cn("max-w-4xl", pin ? "mb-6" : "mb-10")}>
+          {PHILOSOPHY_INTRO.map((line) => (
+            <p key={line} className={PHILOSOPHY_BODY}>
+              {line}
+            </p>
+          ))}
+        </div>
 
         <div className="grid grid-cols-1 gap-6 auto-rows-fr md:grid-cols-3">
           {SERVICES.map((service, index) => (

@@ -41,9 +41,16 @@ export type Service = {
   gradient?: boolean;
 };
 
-/** Sits between the section heading and the cards, framing the three points. */
-export const PHILOSOPHY_INTRO =
-  "Nalar in Bahasa means “common sense”. Because of AI, we believe the old way of building software stops making sense — and here's why:";
+/**
+ * Sits between the section heading and the cards, framing the three points.
+ * An array of lines, not one string with a "\n": HTML collapses newlines to a
+ * space, so the break has to be structural — one element per line.
+ * Services.tsx maps over this; keep it an array if you edit the copy.
+ */
+export const PHILOSOPHY_INTRO = [
+  "Nalar in Bahasa means “common sense”.",
+  "Because of AI, old ways of building software don't make sense anymore and here's why:",
+] as const;
 
 /** Closes the section and hands off to the calculator. */
 export const PHILOSOPHY_OUTRO = "Still Not Convinced?";

@@ -55,8 +55,12 @@ export function usePinnedTrack(pin: boolean): {
   return { trackRef, scrollYProgress };
 }
 
-/** Track height while pinned — how much scroll the reveal is given. */
-export const PIN_TRACK = "h-[200vh]";
+/**
+ * Track height while pinned. 260vh matches the Services section: the reveal
+ * finishes early and the rest is dwell time, so the panel is held open for
+ * most of the scroll rather than flicking past.
+ */
+export const PIN_TRACK = "h-[260vh]";
 
 /** The sticky panel. `pt-32` clears the 112px fixed navbar. */
 export const PIN_PANEL = "sticky top-0 flex h-screen flex-col justify-center pt-32";
