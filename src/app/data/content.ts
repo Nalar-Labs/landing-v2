@@ -148,7 +148,7 @@ export const FAQ_ITEMS: FaqItem[] = [
 ];
 
 export const CTA = {
-  headline: "Let's make your tool your hardest worker",
+  headline: "We focus on building the systems. You focus on building your business.",
   buttonLabel: "Book a call",
   href: CALENDLY_URL,
 } as const;

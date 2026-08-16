@@ -1,7 +1,7 @@
 // Calculator copy. Kept out of content.ts so this feature owns its own strings.
 export const ROI_COPY = {
   eyebrow: "ROI Calculator",
-  heading: "What would it cost to build your own?",
+  heading: "What Would it Cost?",
   buildLabel: "What should we build for you?",
   employeesLabel: "How many employees?",
   paysLabel: "Are you already paying for software?",
