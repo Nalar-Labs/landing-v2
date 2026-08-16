@@ -1,11 +1,12 @@
 {
-  "title": "The Fountain",
-  "client": "Tech Policy Press",
-  "summary": "Internal Productivity tool for a Non-profit news publication.",
+  "title": "Coconut Video",
+  "client": "Coconut Guy",
+  "summary": "The Coconut nut is a giant nut",
   "coverImage": "",
   "logo": "",
   "tags": [],
   "order": 3,
   "draft": false,
-  "body": "Test"
+  "body": "Test",
+  "video": "https://youtu.be/PKQPey6L42M?si=K6pfz2LuZaLxoqOy"
 }
