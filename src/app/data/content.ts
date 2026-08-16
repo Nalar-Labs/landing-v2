@@ -13,6 +13,7 @@ export const CALENDLY_URL = "https://calendly.com/garda4199/30min";
 export const NAV_LINKS: NavLink[] = [
   { label: "Home", href: "#home" },
   { label: "Our Philosophy", href: "#services" },
+  { label: "Cost Calculator", href: "#roi-calculator" },
   { label: "Portfolio", href: "#portfolio" },
   { label: "FAQ", href: "#faq" },
   { label: "Book A Free Session", href: "#contact", accent: true },
