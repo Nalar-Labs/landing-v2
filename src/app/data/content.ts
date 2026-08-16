@@ -21,7 +21,7 @@ export const NAV_LINKS: NavLink[] = [
 export const HERO = {
   prefix: "We make custom",
   cycling: ["agents", "systems", "software", "tools", "platforms","apps"],
-  suffix: "better. safer. faster. ",
+  suffix: "better, safer, faster. ",
   links: [
     { label: "Book a call", href: CALENDLY_URL },
     { label: "Refer a friend", href: "#refer" },
@@ -88,26 +88,25 @@ export type ApproachStep = {
 
 export const APPROACH_STEPS: ApproachStep[] = [
   {
-    title: "Discovery & Scoping,",
-    subtitle: "It all starts with a (free) 30-minute call.",
+    title: "Start with a free call.",
+    subtitle: "Worst case, you leave with free advice.",
     steps: [
-      "Click on this link right here and let's have a call",
-      "If your problem isn't solved by step 1, we'll come back with a plan",
-      "Once you're impressed with our plan, we'll write-up a detailed proposal and get to work!",
+      "Book a free 30-minute call and tell us what's slowing you down.",
+      "If the call alone solves your problem, great. If not, we'll come back with a plan.",
+      "When the plan impresses you, we'll write up a detailed proposal and get to work.",
     ],
   },
   {
-    title: "On Loop: Talk, Build, Test.",
-    subtitle: "Until: Satisfied.",
+    title: "We build in sprints you can watch.",
+    subtitle: "Talk, build, test. Repeat until you're satisfied.",
     paragraph:
       "We design and build in focused sprints with regular online/offline check-ins. All deliverables are documented, versioned, and handed over. We use open tools wherever possible so you're never dependent on a proprietary stack we control.",
   },
   {
-    title:
-      "Training and hand off", 
-    subtitle: "Unlike other vendors, we don't want to lock you in",
+    title: "We hand over everything,",
+    subtitle: "then teach you not to need us.",
     paragraph:
-      "We believe the world would be a better place if everyone had the ability to build things on their own. That's why we want to make sure even when we're gone, you and you're team will be able to continue building.",
+      "We believe the world is better when people can build things on their own. So when the work is done, your team gets the code, the docs, the credentials, and the training to keep building without us.",
   },
 ];
 
@@ -155,7 +154,7 @@ export const FAQ_ITEMS: FaqItem[] = [
 ];
 
 export const CTA = {
-  headline: "We focus on building the systems. You focus on building your business.",
+  headline: "Let's start building things the new way.",
   buttonLabel: "Book a call",
   href: CALENDLY_URL,
 } as const;

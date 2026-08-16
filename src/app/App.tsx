@@ -3,7 +3,8 @@ import { Navbar } from "./sections/Navbar";
 import { Hero } from "./sections/Hero";
 import { RoiCalculator } from "./sections/RoiCalculator";
 import { Services } from "./sections/Services";
-import { Approach } from "./sections/Approach";
+// Approach is temporarily hidden — see the note in <main> below.
+// import { Approach } from "./sections/Approach";
 import { Portfolio } from "./sections/Portfolio";
 import { FAQ } from "./sections/FAQ";
 import { CTA } from "./sections/CTA";
@@ -24,7 +25,12 @@ export default function App() {
             <Services />
             <RoiCalculator />
             <Portfolio />
-            <Approach />
+            {/* Approach is hidden for now, not deleted: the section component,
+                its APPROACH_STEPS content and their tests are all still here.
+                To bring it back, uncomment this line and its import above.
+                Nothing links to it — it carries no id and appears in no nav —
+                so hiding it leaves no dead anchors. */}
+            {/* <Approach /> */}
             <FAQ />
             <CTA />
           </main>
