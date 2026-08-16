@@ -10,7 +10,7 @@ import {
 export function FAQ() {
   return (
     <section id="faq" className={cn(CONTAINER, SECTION.wrap)}>
-      <h2 className={cn(TYPE.h3, SECTION.titleGap)}>Questions? We have answers</h2>
+      <h2 className={cn(TYPE.h3, SECTION.titleGap)}>Your Questions, Answered</h2>
 
       {/* Collapsible, all closed by default. Not an independently scrollable
           region, so it needs no data-lenis-prevent. */}

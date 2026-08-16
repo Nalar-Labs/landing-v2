@@ -20,12 +20,14 @@ test("resolveTier clamps below the first band instead of returning undefined", (
   assert.equal(resolveTier(-5), "Low");
 });
 
-test("hostingMonthly is the base until per-user overtakes it", () => {
+test("hostingMonthly is the base until per-user overtakes it, then tapers", () => {
   assert.equal(hostingMonthly(10), 25);
   assert.equal(hostingMonthly(40), 25);
   assert.equal(hostingMonthly(100), 30);
   assert.equal(hostingMonthly(500), 150);
-  assert.equal(hostingMonthly(5000), 1500);
+  // Beyond the 500-user taper, extra users bill at the cheaper rate.
+  assert.equal(hostingMonthly(5000), 195);
+  assert.equal(hostingMonthly(10000), 245);
 });
 
 test("hostingMonthly never jumps at a band edge", () => {
@@ -35,17 +37,22 @@ test("hostingMonthly never jumps at a band edge", () => {
   assert.ok(at101 - at100 < 1, `expected a smooth step, got ${at100} -> ${at101}`);
 });
 
-test("maintenanceMonthly prices committed hours at the consulting rate", () => {
-  assert.equal(maintenanceMonthly("Low"), 8 * 35);
-  assert.equal(maintenanceMonthly("Medium"), 16 * 35);
-  assert.equal(maintenanceMonthly("High"), 24 * 35);
+test("maintenanceMonthly scales with apps and audience", () => {
+  // Per-app hours by tier, no users: near-pure-infra upkeep.
+  assert.equal(maintenanceMonthly("Low", 1, 0), 0.5 * 35);
+  assert.equal(maintenanceMonthly("Medium", 2, 0), 1.5 * 35);
+  assert.equal(maintenanceMonthly("High", 1, 0), 2 * 35);
+  // Audience adds 0.5h per 1,000 users: the 10k-user calibration point
+  // commits 2 + 5 = 7 hours.
+  assert.equal(maintenanceMonthly("High", 1, 10000), 7 * 35);
+  assert.equal(Math.round(maintenanceMonthly("High", 7, 1000)), Math.round(14.5 * 35));
 });
 
 test("selectionWeight sums weights, filtered by kind", () => {
   const picked = ["workflow", "hris", "web"];
-  assert.equal(selectionWeight(picked, "internal"), 2);
-  assert.equal(selectionWeight(picked, "external"), 1);
-  assert.equal(selectionWeight(picked, "all"), 3);
+  assert.equal(selectionWeight(picked, "internal"), 2.5);
+  assert.equal(selectionWeight(picked, "external"), 3.5);
+  assert.equal(selectionWeight(picked, "all"), 6);
 });
 
 test("selectionWeight ignores unknown ids", () => {
@@ -56,12 +63,23 @@ test("selectionWeight of an empty selection is zero", () => {
   assert.equal(selectionWeight([], "all"), 0);
 });
 
-test("buildMonths follows base-plus-one-per-extra-app", () => {
-  assert.equal(buildMonths(0), 0);
-  assert.equal(buildMonths(1), 2);
-  assert.equal(buildMonths(2), 2);
-  assert.equal(buildMonths(3), 3);
-  assert.equal(buildMonths(5), 5);
+test("buildMonths: raw months track weight at Low tier, base covers the first unit", () => {
+  assert.equal(buildMonths(0, "Low"), 0);
+  assert.equal(buildMonths(1, "Low"), 1);
+  assert.equal(buildMonths(2, "Low"), 2);
+  assert.equal(buildMonths(3, "Low"), 3);
+  assert.equal(buildMonths(5, "Low"), 5);
+});
+
+test("buildMonths stretches with tier and always rounds up for display", () => {
+  // 2.5 weight at Medium: 2.5 x 1.15 = 2.875 -> never promise the shorter
+  // month, so 3.
+  assert.equal(buildMonths(2.5, "Medium"), 3);
+  // CALIBRATION PIN: one web app (3.5) at High = 3.5 x 1.5 = 5.25 -> 6
+  // months — the real delivered project (10k users, six months).
+  assert.equal(buildMonths(3.5, "High"), 6);
+  // The multiplier may never make a bigger tier faster than a smaller one.
+  assert.ok(buildMonths(4, "High") >= buildMonths(4, "Low"));
 });
 
 import { calculateRoi, agencyShareRange, type RoiInputs } from "./roi.ts";
@@ -79,19 +97,27 @@ test("returns null when nothing is selected, so the panel can rest", () => {
 });
 
 test("internal-only replacing SaaS produces the ROI story", () => {
+  // workflow (1.0) + hris (1.5) = 2.5 weight at Medium: raw 2.5 x 1.15 =
+  // 2.875 months -> displays 3, but BILLS the raw fraction: ~$12,650.
   const result = calculateRoi(internalOnly);
   assert.ok(result);
   assert.equal(result.mode, "roi");
   assert.equal(result.tier, "Medium");
-  assert.equal(result.buildMonths, 2);
-  assert.equal(result.buildCost, 8800);
+  assert.equal(result.buildMonths, 3);
+  assert.equal(Math.round(result.buildCost), 12650);
+  assert.equal(result.ourHourlyRate, 55);
+  assert.equal(Math.round(result.agencyHourlyRate), 146);
+  // Agency at the same raw scope, 2.5x slower: ceil(2.875 x 2.5) = 8.
+  assert.equal(result.agencyBuildMonths, 8);
   assert.equal(result.hostingMonthly, 25);
-  assert.equal(result.maintenanceMonthly, 560);
-  assert.equal(result.newMonthly, 585);
+  // (0.75h x 2 apps + 0.5h x 40/1000 users) x $35 ~= $53.
+  assert.equal(Math.round(result.maintenanceMonthly), 53);
+  assert.equal(Math.round(result.newMonthly), 78);
   if (result.mode !== "roi") return;
-  assert.equal(result.monthlySaving, 1215);
+  assert.equal(Math.round(result.monthlySaving), 1722);
   assert.equal(result.payback.kind, "months");
-  assert.equal(result.netBenefit, 34940);
+  // ~1,722 x 36 - ~12,650
+  assert.equal(Math.round(result.netBenefit ?? 0), 49335);
 });
 
 test("a stale external user count cannot inflate the tier", () => {
@@ -115,13 +141,16 @@ test("a stale hidden employees value cannot inflate an external-only headline", 
   assert.ok(result);
   assert.equal(result.tier, "Low");
   assert.equal(Math.round((result.percentOfAgency ?? 0) * 100), 21);
-  assert.equal(result.newMonthly, 305);
+  // hosting 25 + (0.5h x 3 apps + 0.5h x 10/1000) x $35 ~= $53
+  assert.equal(Math.round(result.newMonthly), 78);
 
   const withoutStaleEmployees = calculateRoi({ ...externalOnly, employees: 0 });
   assert.deepEqual(result, withoutStaleEmployees);
 });
 
 test("ticking an external app switches to the agency story", () => {
+  // workflow (1.0) + hris (1.5) + web (3.5) = 6.0 weight at High (5,000
+  // external users are TRUSTED here because web is ticked): 6 x 1.5 = 9 months.
   const result = calculateRoi({
     ...internalOnly,
     selectedAppIds: ["workflow", "hris", "web"],
@@ -129,9 +158,15 @@ test("ticking an external app switches to the agency story", () => {
   assert.ok(result);
   assert.equal(result.mode, "agency");
   assert.equal(result.tier, "High");
-  assert.equal(result.buildMonths, 3);
-  assert.equal(result.hostingMonthly, 1500);
-  assert.equal(result.newMonthly, 2340);
+  assert.equal(result.buildMonths, 9);
+  // Tapered hosting: 150 + 0.01 x 4,500 = 195.
+  assert.equal(result.hostingMonthly, 195);
+  // (2h x 3 apps + 0.5h x 5) x $35 = 297.5 -> ~493 all-in.
+  assert.equal(Math.round(result.newMonthly), 493);
+  if (result.mode !== "agency") return;
+  // Split-by-path: the 2 internal tools replace $1,800 SaaS against an
+  // employees-sized run cost (~$78), so the saving survives the mixed pick.
+  assert.equal(Math.round(result.internalMonthlySaving ?? 0), 1722);
 });
 
 test("not paying for software switches to the agency story", () => {
@@ -164,7 +199,7 @@ test("a zero or missing spend switches to the agency story", () => {
 });
 
 test("payback reports no-payback when the build costs more to run", () => {
-  const result = calculateRoi({ ...internalOnly, currentMonthlySpend: 500 });
+  const result = calculateRoi({ ...internalOnly, currentMonthlySpend: 50 });
   assert.ok(result);
   assert.equal(result.mode, "roi");
   if (result.mode !== "roi") return;
@@ -175,7 +210,7 @@ test("payback reports no-payback when the build costs more to run", () => {
 });
 
 test("ROI figures are null with no net saving, and populated when profitable", () => {
-  const noSaving = calculateRoi({ ...internalOnly, currentMonthlySpend: 500 });
+  const noSaving = calculateRoi({ ...internalOnly, currentMonthlySpend: 50 });
   assert.ok(noSaving);
   assert.equal(noSaving.mode, "roi");
   if (noSaving.mode !== "roi") return;
@@ -189,14 +224,14 @@ test("ROI figures are null with no net saving, and populated when profitable", (
   assert.ok(profitable);
   assert.equal(profitable.mode, "roi");
   if (profitable.mode !== "roi") return;
-  assert.equal(profitable.netBenefit, 34940);
+  assert.equal(Math.round(profitable.netBenefit ?? 0), 49335);
   assert.ok(profitable.roiFraction !== null && profitable.roiFraction > 0);
 });
 
 test("payback reports beyond-horizon rather than a silly number, and still hides ROI figures", () => {
-  // Saving of $15/mo against an $8,800 build is ~587 months, so
-  // netBenefit = 15 * 36 - 8800 = -8260: negative despite monthlySaving > 0.
-  const result = calculateRoi({ ...internalOnly, currentMonthlySpend: 600 });
+  // Saving of ~$222/mo against a ~$12,650 build is ~57 months (> 36), so
+  // netBenefit = ~222 * 36 - 12,650 ~= -4,665: negative despite monthlySaving > 0.
+  const result = calculateRoi({ ...internalOnly, currentMonthlySpend: 300 });
   assert.ok(result);
   assert.equal(result.mode, "roi");
   if (result.mode !== "roi") return;
@@ -225,10 +260,12 @@ test("EXACT: internal-only fixture pins roiFraction and percentOfAgency to the s
   assert.equal(result.mode, "roi");
   assert.equal(Math.round((result.percentOfAgency ?? 0) * 100), 38);
   if (result.mode !== "roi") return;
-  assert.equal(Math.round((result.roiFraction ?? 0) * 100), 397);
+  // ~49,335 net over a ~12,650 build. Grounded by the 2026-08-16 calibration
+  // to delivered projects rather than the launch model's guesses.
+  assert.equal(Math.round((result.roiFraction ?? 0) * 100), 390);
 });
 
-test("EXACT: internal + web-app selection at 5,000 external users pins percentOfAgency to 55%", () => {
+test("EXACT: internal + web-app selection at 5,000 external users pins percentOfAgency to 43%", () => {
   const result = calculateRoi({
     ...internalOnly,
     selectedAppIds: ["workflow", "hris", "web"],
@@ -236,7 +273,46 @@ test("EXACT: internal + web-app selection at 5,000 external users pins percentOf
   });
   assert.ok(result);
   assert.equal(result.mode, "agency");
-  assert.equal(Math.round((result.percentOfAgency ?? 0) * 100), 55);
+  // High tier $5,000/mo against the $11,666.67 benchmark.
+  assert.equal(Math.round((result.percentOfAgency ?? 0) * 100), 43);
+});
+
+test("CALIBRATION: the delivered web app — 10k users, 6 months, $5k/mo, ~$500/mo to run", () => {
+  const result = calculateRoi({
+    selectedAppIds: ["web"],
+    employees: 0,
+    paysForSoftware: false,
+    currentMonthlySpend: 0,
+    externalUsers: 10000,
+  });
+  assert.ok(result);
+  assert.equal(result.mode, "agency");
+  assert.equal(result.tier, "High");
+  assert.equal(result.buildMonths, 6);
+  assert.equal(result.ourHourlyRate, 62.5);
+  // hosting 245 + upkeep (2h + 0.5h x 10) x $35 = 245 -> 490 ~= the real $500.
+  assert.equal(Math.round(result.newMonthly), 490);
+});
+
+test("CALIBRATION: a single internal tool for 100 employees runs on ~$60/mo and pays back within a year", () => {
+  const result = calculateRoi({
+    selectedAppIds: ["workflow"],
+    employees: 100,
+    paysForSoftware: true,
+    currentMonthlySpend: 600,
+    externalUsers: 0,
+  });
+  assert.ok(result);
+  assert.equal(result.mode, "roi");
+  // hosting 30 + (0.75h + 0.5h x 0.1) x $35 = 28 -> $58/mo ~= one t3.large.
+  assert.equal(Math.round(result.newMonthly), 58);
+  if (result.mode !== "roi") return;
+  assert.equal(result.payback.kind, "months");
+  if (result.payback.kind !== "months") return;
+  assert.ok(
+    result.payback.months <= 12,
+    `expected payback within a year, got ${result.payback.months}`,
+  );
 });
 
 test("percentOfAgency is null once the tier rate reaches the agency benchmark", () => {

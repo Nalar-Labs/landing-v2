@@ -8,7 +8,7 @@
 
 **Tech Stack:** Vite, React 18, TypeScript, Tailwind v4, shadcn/ui primitives (`select`, `checkbox`, `label`, `input`, `button` — all already present in `src/app/components/ui/`).
 
-**Spec:** [`docs/PRDs/2026-08-15_roi-calculator_PENDING.md`](../../PRDs/2026-08-15_roi-calculator_PENDING.md)
+**Spec:** [`docs/PRDs/2026-08-16_roi-calculator_PENDING.md`](../../PRDs/2026-08-16_roi-calculator_PENDING.md)
 
 ## Global Constraints
 

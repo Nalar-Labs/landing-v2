@@ -1,7 +1,7 @@
 # Plan — ROI Calculator
 
 Status: **PENDING** — decisions settled, ready to hand to the superpowers skill.
-Last updated 2026-08-15.
+Last updated 2026-08-16 — realism pass (§3.1) and a partial reversal of §6.
 
 Sources of truth:
 [`docs/mockups/web-redesign-aug-9.png`](../mockups/web-redesign-aug-9.png) for layout,
@@ -46,9 +46,14 @@ are not equally trustworthy:
 | Rate tiers (Low $2,400 / Med $4,400 / High $6,400 per month) | Financial Plan 2026 → Baselines | Real |
 | Consulting rate $35/hr | Financial Plan 2026 → Hourly Rate References | Real |
 | Agency benchmark $11,666.67/mo | Financial Plan 2026 → Benchmark ($35k / 3 months) | Real |
-| Maintenance hours (8/16/24 per month) | **Your commitment**, not a technical guess | Real |
+| Maintenance hours (per-app with 8/16/24 floor — §3.1) | **Your commitment**, not a technical guess | Real |
 | Hosting: $25 base + $0.30/user | Deliberately simple estimate — see §2.1 | Admitted estimate |
-| Complexity weights | All 1.00 — deliberately neutral | Neutral |
+| Complexity weights | Tuned 2026-08-16 (§3.1) — workflow tool is the 1.00 baseline | Judgement |
+
+> **Workbook drift (2026-08-16).** The §3.1 refinements were made in code first
+> at the owner's request; `roi-calculator-config.xlsx` still holds the older
+> neutral weights and flat maintenance hours. Re-sync the workbook before the
+> next tuning pass.
 
 Maintenance is not a guess: it is how many hours a month you agree to give each
 tier, priced at your own consulting rate. That is a business decision, and it is
@@ -112,27 +117,102 @@ Inputs, in the order the form asks for them:
 Derivation:
 
 ```
-totalApps   = Σ complexity weights of ticked apps        (internal + external)
+totalWeight = Σ complexity weights of ticked apps        (internal + external)
+appCount    = number of ticked apps                      (unweighted)
 scaleDriver = MAX(employees, externalApps > 0 ? users : 0)
 tier        = band lookup on scaleDriver                 → Low | Medium | High
-buildMonths = totalApps = 0 ? 0
-              : baseMonths + MAX(0, totalApps − appsInBase) × monthsPerApp
+buildMonths = totalWeight = 0 ? 0
+              : CEIL((baseMonths + MAX(0, totalWeight − weightInBase) × monthsPerUnit)
+                     × tierMonthsMultiplier[tier])
 buildCost   = tierMonthlyRate × buildMonths              [INTERNAL ONLY]
-newMonthly  = hosting(scaleDriver) + maintenance(tier)
+newMonthly  = hosting(scaleDriver)
+              + MAX(minHours[tier], perAppHours[tier] × appCount) × consultingRate
 ```
-
-With every weight at 1.00 this reduces to the stated rule: **2 months for 1–2
-apps, +1 month per app after.** Weights exist so a payroll build can be made
-heavier than an internal chat without touching code.
 
 `scaleDriver` ignores the external user count unless an external app is actually
 ticked — otherwise a stale number in a hidden field silently inflates the tier.
 
 **Rejected — separate internal and external calculations.** See §4.
 
+### 3.1 Realism pass (2026-08-16)
+
+The launch model was too optimistic, visibly so: all seven apps for 1,000
+employees priced out at **7 months to build and $1,140/month to run** — numbers
+no engineer would defend on a call, which makes them worse than pessimistic
+ones. Owner instruction: *more realistic, still attractive.* Three changes:
+
+1. **Weights are no longer neutral.** Workflow tool stays the 1.00 baseline;
+   chat 1.25 (realtime infra), HRIS 1.5 (data migration), payroll 1.75
+   (compliance), web 1.5, mobile 1.75 (store review, platform duplication),
+   desktop 1.25. This is the tuning mechanism §3 always reserved — first use.
+2. **Maintenance scales with app count**: `MAX(tier floor, per-app hours ×
+   apps)`, per-app 4/6/10 by tier. One or two apps sit on the old 8/16/24
+   floor, so small-project quotes are unchanged; seven apps at High commit 70
+   hours, not 24. Counted per app, not per weight — "ten hours per app per
+   month" survives a call, a weighted sum does not.
+3. **Scale stretches the timeline**: multiplier 1.0 / 1.15 / 1.3 by tier, then
+   round UP. Shipping to 1,000 people is slower than shipping to 10 even with
+   an identical feature list; the display never promises the shorter month.
+
+Net effect on the reference scenarios: the everything-bundle at 1,000 employees
+moves from 7 → **13 months** and $1,140 → **$2,750/month**; the two-tool
+40-employee case moves from 2 → 3 months and its ROI headline from 397% → 231%,
+with its running cost unchanged at $585. Hosting was left alone — §2.1's
+simplicity argument stands, and it is the smallest term.
+
+**Rejected — keep the flat model and lengthen only the copy disclaimers.**
+A disclaimer under an implausible number does not make it plausible.
+
+### 3.2 Calibration to delivered work (2026-08-16, same day, later)
+
+The realism pass was immediately superseded by something better than judgement:
+**two real delivered projects as fixed points.** Owner-supplied ground truth:
+
+| Data point | Real figure |
+|---|---|
+| One web app, 10k users — build | 6 months, billed $5,000/mo |
+| Same project — cost to run | ~$500/mo all-in |
+| One internal tool, ~100 employees — cost to run | ~$60/mo ("just a t3.large") |
+| Same tool — payback | must land within a year |
+
+The model now reproduces all four (490/58 against the 500/60 targets — both
+inside the "estimate, not a quote" band). What moved:
+
+1. **High tier: $80 → $62.50/hr** ($5,000/mo) — the rate actually charged, on
+   this project and on the current retainer. The Financial Plan's $80
+   aspiration lost to observed reality. Headline improves to **43%**.
+2. **External weights way up** (web 3.5, mobile 4, desktop 3): one customer
+   product ≈ a 3.5-month build at small scale — pinned so web at High = 6 months.
+3. **Timeline: base 1 month covers the first 1.0 weight** (raw months ≈ total
+   weight), tier multiplier {1, 1.15, 1.5}, display rounds up. **Build cost
+   bills the raw fraction** — a 1.15-month tool costs ~$5,060, not two full
+   months; this is what puts small-tool payback inside a year (~9 months at
+   $600/mo replaced spend).
+4. **Maintenance ≈ infra + audience**: (0.5/0.75/2 h per app by tier +
+   0.5 h per 1,000 users) × $35. AI-era ops: an internal tool is near-pure
+   infra; a 10k-user product needs real hours.
+5. **Hosting taper**: $0.30/user to 500 users, $0.01/user beyond (the §2.1
+   "revisit above ~500 users" promise, now honoured — 10k users ≈ $245, not
+   $3,000).
+6. **Agency build time is public**: `ceil(raw months × 2.5)` — a judgement
+   figure (agencies ship ~2.5× slower), shown beside ours in Mode B.
+
+**§4 partial adoption.** The parked "split running cost by path" model is now
+used *for display*: mixed selections show `Monthly savings on internal tools`
+(spend − internal-only running cost, sized by employees), shown only when
+positive. The Mode A/B gate itself is unchanged.
+
 ---
 
 ## 4. Mixed selections: one project, one gate
+
+> **Superseded in the UI (2026-08-16, evening).** Owner: mixed selections made
+> the calculator too complex. The form now enforces **either internal OR
+> external** — picking a pill from one group clears the other group's
+> selection (switch, not disable; multi-select within a group stays). The
+> model below is unchanged and still handles a mixed selection correctly —
+> it is a safety net the form can no longer reach, and §3.2's split-by-path
+> saving stat is now dormant for the same reason.
 
 **Decision.** Ticking both internal and external apps produces **one combined
 project** — one timeline, one build. But the **ROI framing appears only when the
@@ -198,16 +278,22 @@ teaser, never a blank box.
 
 ## 6. Public vs internal outputs
 
-**Decision.** The calculator never renders a project cost or an hourly rate.
-[PRD 1 §6](2026-08-15_visual-refresh_PENDING.md) already decided the public site
-shows no rates; a calculator that derives `$12,800` from the same rates would
-reverse that decision by the back door.
+**Decision (revised 2026-08-16).** The calculator never renders a **project
+total**. Monthly team rates, however, are now public — owner instruction: *"it's
+ok to show typical rate and also our rate."* Mode B shows the tier's monthly
+rate beside the agency benchmark, which substantiates the `% of agency`
+headline instead of asking the visitor to take a bare percentage on faith.
+
+The original rule (never render any rate) partially reversed here; the
+remaining line is drawn at totals: a `$13,200` figure commits to a price before
+scoping, a `$4,400/mo` rate does not.
 
 | Output | Public? |
 |---|---|
 | `% of agency`, build time, new monthly cost | **Yes** |
+| Tier monthly rate + agency benchmark rate | **Yes**, Mode B (since 2026-08-16) |
 | Monthly saving, payback, net benefit, ROI % | **Yes**, in Mode A only |
-| Build cost, agency equivalent | **No** — internal, for your own quoting |
+| Build cost, agency equivalent (totals) | **No** — internal, for your own quoting |
 
 The workbook marks every output `PUBLIC` or `INTERNAL` so the boundary survives
 the port to code.

@@ -72,9 +72,12 @@ export function ServiceCard({
           // content at any card height.
           staticLayout ? "gap-4" : "h-full justify-center gap-3",
           compact ? "p-6" : "p-8 md:p-[30px]",
-          gradient
-            ? "bg-surface bg-gradient-to-r from-wash-from to-wash-to"
-            : "bg-surface",
+          // In the scroll-driven layout every card starts white (collapsed)
+          // and its wash overlay fades in with expansion — the static accent
+          // gradient would pre-tint the card before its wash arrives, so it
+          // only applies when the overlay isn't rendered.
+          "bg-surface",
+          gradient && staticLayout && "bg-gradient-to-r from-wash-from to-wash-to",
         )}
       >
         {!staticLayout && (

@@ -91,14 +91,15 @@ function ServicesInner({ isDesktop }: { isDesktop: boolean }) {
             pin ? "mt-6" : "mt-10",
           )}
         >
-          <span className={PHILOSOPHY_BODY}>{PHILOSOPHY_OUTRO}</span>
+          <span className={PHILOSOPHY_BODY}>{PHILOSOPHY_OUTRO}</span> <b>
           <a
             href="#roi-calculator"
-            className="inline-flex min-h-11 w-fit items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 font-body text-sm transition-colors hover:border-ink"
+            className="inline-flex min-h-11 w-fit items-center gap-2 rounded-full bg-brand px-4 py-2 font-body text-sm text-white transition-colors hover:bg-brand-hover"
           >
-            Use the Nalar ROI Calculator
+            Use our ROI Calculator
             <ArrowRight className="size-4" aria-hidden />
-          </a>
+          </a> 
+            </b>
         </div>
       </div>
     </section>

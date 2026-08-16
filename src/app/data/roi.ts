@@ -14,15 +14,38 @@ export function resolveTier(users: number, config: RoiConfig = ROI_CONFIG): Tier
   return resolved.name;
 }
 
-/** A small fixed base for the server, plus a per-user amount. Continuous. */
+/**
+ * A small fixed base for the server, plus a per-user amount that tapers:
+ * seats are a fair infra proxy for a 100-person tool and a poor one at 10k
+ * users, so users beyond the taper point bill at the cheaper rate.
+ * Continuous everywhere — no cliffs.
+ */
 export function hostingMonthly(users: number, config: RoiConfig = ROI_CONFIG): number {
-  const scaled = Math.max(0, users) * config.hostingPerUserMonthly;
+  const count = Math.max(0, users);
+  const taper = config.hostingTaperAfterUsers;
+  const scaled =
+    count <= taper
+      ? count * config.hostingPerUserMonthly
+      : taper * config.hostingPerUserMonthly +
+        (count - taper) * config.hostingPerUserBeyondMonthly;
   return Math.max(config.hostingBaseMonthly, scaled);
 }
 
-/** Hours we commit to this tier each month, at our own consulting rate. */
-export function maintenanceMonthly(tier: Tier, config: RoiConfig = ROI_CONFIG): number {
-  return config.maintenanceHours[tier] * config.consultingHourlyRate;
+/**
+ * Monthly upkeep priced at our consulting rate: a small commitment per app
+ * plus load that tracks audience size. Calibrated to delivered work — an
+ * internal tool runs on near-pure infra; a 10k-user product needs real ops.
+ */
+export function maintenanceMonthly(
+  tier: Tier,
+  appCount: number,
+  users: number,
+  config: RoiConfig = ROI_CONFIG,
+): number {
+  const hours =
+    config.maintenanceHoursPerApp[tier] * Math.max(0, appCount) +
+    config.maintenanceHoursPerThousandUsers * (Math.max(0, users) / 1000);
+  return hours * config.consultingHourlyRate;
 }
 
 /**
@@ -41,15 +64,33 @@ export function selectionWeight(
 }
 
 /**
- * Base duration covers the first `appsIncludedInBase` weighted apps; each
- * weighted app beyond that adds `monthsPerAdditionalApp`. With every weight at
- * 1.00 this is exactly: 2 months for 1-2 apps, +1 month each after.
+ * Raw fractional months: base covers the first `appsIncludedInBase` units of
+ * weight, each unit beyond adds `monthsPerAdditionalApp`, and the tier
+ * multiplier stretches the total (bigger audience = hardening, migration,
+ * rollout). The BUILD COST bills this raw figure; the calendar shown to the
+ * visitor is `buildMonths`, which rounds up and never promises the shorter
+ * month. Billing raw is what keeps a small tool's payback honest — a
+ * 1.15-month build costs 1.15 months, not 2.
  */
-export function buildMonths(totalWeight: number, config: RoiConfig = ROI_CONFIG): number {
+export function buildMonthsRaw(
+  totalWeight: number,
+  tier: Tier,
+  config: RoiConfig = ROI_CONFIG,
+): number {
   if (totalWeight <= 0) return 0;
-  const { baseMonths, appsIncludedInBase, monthsPerAdditionalApp } = config.timeline;
+  const { baseMonths, appsIncludedInBase, monthsPerAdditionalApp, tierMonthsMultiplier } =
+    config.timeline;
   const extra = Math.max(0, totalWeight - appsIncludedInBase);
-  return baseMonths + extra * monthsPerAdditionalApp;
+  return (baseMonths + extra * monthsPerAdditionalApp) * tierMonthsMultiplier[tier];
+}
+
+/** Calendar months shown to the visitor — raw, rounded up. */
+export function buildMonths(
+  totalWeight: number,
+  tier: Tier,
+  config: RoiConfig = ROI_CONFIG,
+): number {
+  return Math.ceil(buildMonthsRaw(totalWeight, tier, config));
 }
 
 /** Payback is a sentence as often as it is a number. */
@@ -69,10 +110,20 @@ export type RoiInputs = {
 type RoiCommon = {
   tier: Tier;
   buildMonths: number;
-  /** INTERNAL ONLY — never render. */
+  /** What the same scope takes an agency, in calendar months. PUBLIC. */
+  agencyBuildMonths: number;
+  /** INTERNAL ONLY — never render. Bills raw fractional months. */
   buildCost: number;
   /** INTERNAL ONLY — never render. */
   agencyEquivalent: number;
+  /**
+   * PUBLIC hourly team rates (owner decision 2026-08-16, partially reversing
+   * PRD §6): the tier's hourly rate and the agency benchmark's hourly
+   * equivalent (benchmark / monthly hours) may be shown side by side.
+   * Project totals (buildCost, agencyEquivalent) stay internal.
+   */
+  ourHourlyRate: number;
+  agencyHourlyRate: number;
   /**
    * Null when the tier rate is at or above the agency benchmark (share >= 1).
    * Printing "112% of typical agency rates" would be worse than printing
@@ -91,7 +142,18 @@ type RoiCommon = {
  * cannot render a savings number the model did not sanction.
  */
 export type RoiOutcome =
-  | ({ mode: "agency"; reason: "external" | "not-paying" } & RoiCommon)
+  | ({
+      mode: "agency";
+      reason: "external" | "not-paying";
+      /**
+       * SaaS spend replaced by the INTERNAL tools in a mixed selection,
+       * against a running cost sized by employees only — the §4 "split by
+       * path" model, adopted for display 2026-08-16. Null unless internal
+       * apps are ticked, real spend exists, and the saving is positive
+       * (never render a negative saving).
+       */
+      internalMonthlySaving: number | null;
+    } & RoiCommon)
   | ({ mode: "roi" } & RoiCommon & {
       monthlySaving: number;
       payback: Payback;
@@ -145,20 +207,30 @@ export function calculateRoi(
 
   const tier = resolveTier(scaleUsers, config);
   const tierRate = config.tiers.find((entry) => entry.name === tier)!;
-  const months = buildMonths(totalWeight, config);
+  const rawMonths = buildMonthsRaw(totalWeight, tier, config);
+  const months = Math.ceil(rawMonths);
+
+  // Maintenance scales with the count of ticked apps, not their weights: the
+  // commitment is "hours per app", which survives a call unlike a weighted sum.
+  const picked = new Set(inputs.selectedAppIds);
+  const appCount = config.catalog.filter((app) => picked.has(app.id)).length;
 
   const hosting = hostingMonthly(scaleUsers, config);
-  const maintenance = maintenanceMonthly(tier, config);
-  const agencyEquivalent = config.agencyMonthly * months;
-  const buildCost = tierRate.monthlyRate * months;
+  const maintenance = maintenanceMonthly(tier, appCount, scaleUsers, config);
+  // Both sides bill the raw fraction so the comparison stays apples-to-apples.
+  const agencyEquivalent = config.agencyMonthly * rawMonths;
+  const buildCost = tierRate.monthlyRate * rawMonths;
 
   const agencyShare = agencyEquivalent > 0 ? buildCost / agencyEquivalent : 0;
 
   const common: RoiCommon = {
     tier,
     buildMonths: months,
+    agencyBuildMonths: Math.ceil(rawMonths * config.agencyMonthsMultiplier),
     buildCost,
     agencyEquivalent,
+    ourHourlyRate: tierRate.hourlyRate,
+    agencyHourlyRate: config.agencyMonthly / config.monthlyHours,
     percentOfAgency: agencyShare >= 1 ? null : agencyShare,
     hostingMonthly: hosting,
     maintenanceMonthly: maintenance,
@@ -171,9 +243,27 @@ export function calculateRoi(
     internalWeight > 0 && externalWeight === 0 && inputs.paysForSoftware && spend > 0;
 
   if (!qualifiesForRoi) {
+    // §4 split-by-path, display only: what the INTERNAL share of a mixed
+    // selection saves, sized by employees so the external audience cannot
+    // inflate the running cost charged against SaaS savings.
+    const employees = internalWeight > 0 ? finiteNonNegative(inputs.employees) : 0;
+    const internalAppCount = config.catalog.filter(
+      (app) => picked.has(app.id) && app.kind === "internal",
+    ).length;
+    const internalTier = resolveTier(employees, config);
+    const internalRunMonthly =
+      hostingMonthly(employees, config) +
+      maintenanceMonthly(internalTier, internalAppCount, employees, config);
+    const rawInternalSaving = spend - internalRunMonthly;
+    const internalMonthlySaving =
+      internalWeight > 0 && inputs.paysForSoftware && spend > 0 && rawInternalSaving > 0
+        ? rawInternalSaving
+        : null;
+
     return {
       mode: "agency",
       reason: externalWeight > 0 ? "external" : "not-paying",
+      internalMonthlySaving,
       ...common,
     };
   }

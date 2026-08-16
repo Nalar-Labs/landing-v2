@@ -101,7 +101,7 @@ function RoiCalculatorInner({ pin }: { pin: boolean }) {
         >
           <RoiForm value={inputs} onChange={handleChange} onCalculate={handleCalculate} />
           <div ref={resultRef}>
-            <RoiResult outcome={outcome} />
+            <RoiResult outcome={outcome} inputs={inputs} />
           </div>
         </motion.div>
       </div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { cn } from "../lib/layout";
 import { ROI_CONFIG } from "../data/roi-config";
+import type { CatalogApp } from "../data/roi-config";
 import { ROI_COPY } from "../data/roi-copy";
 import type { RoiInputs } from "../data/roi";
 
@@ -12,6 +13,31 @@ export type RoiFormProps = {
 
 const FIELD =
   "w-full rounded-xl border border-line bg-surface px-4 py-3 font-body outline-none transition-colors focus:border-ink";
+
+/** One toggleable catalog pill. Shared by the Internal Tools / External Products groups. */
+function AppPill({
+  app,
+  selected,
+  onToggle,
+}: {
+  app: CatalogApp;
+  selected: boolean;
+  onToggle: (id: string) => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={selected}
+      onClick={() => onToggle(app.id)}
+      className={cn(
+        "min-h-11 rounded-full border px-4 py-2 font-body text-sm transition-colors",
+        selected ? "border-ink bg-ink text-white" : "border-line bg-surface hover:border-ink",
+      )}
+    >
+      {app.label}
+    </button>
+  );
+}
 
 /** A zero prop shows an empty field; any other finite value shows its digits. */
 function toFieldText(value: number): string {
@@ -52,13 +78,24 @@ export function RoiForm({ value, onChange, onCalculate }: RoiFormProps) {
     );
   }, [value.externalUsers]);
 
-  const toggleApp = (id: string) =>
-    set(
-      "selectedAppIds",
-      value.selectedAppIds.includes(id)
-        ? value.selectedAppIds.filter((entry) => entry !== id)
-        : [...value.selectedAppIds, id],
+  // EITHER internal OR external, never both (owner decision 2026-08-16 —
+  // mixed projects made the panel too complex). Picking a pill from the other
+  // group switches to it: the previous group's selection is cleared rather
+  // than disabled, so no button is ever dead. Multi-select within a group stays.
+  const toggleApp = (id: string) => {
+    if (value.selectedAppIds.includes(id)) {
+      set(
+        "selectedAppIds",
+        value.selectedAppIds.filter((entry) => entry !== id),
+      );
+      return;
+    }
+    const kind = ROI_CONFIG.catalog.find((app) => app.id === id)?.kind;
+    const sameKind = value.selectedAppIds.filter((entry) =>
+      ROI_CONFIG.catalog.some((app) => app.id === entry && app.kind === kind),
     );
+    set("selectedAppIds", [...sameKind, id]);
+  };
 
   const hasInternal = ROI_CONFIG.catalog.some(
     (app) => app.kind === "internal" && value.selectedAppIds.includes(app.id),
@@ -76,30 +113,29 @@ export function RoiForm({ value, onChange, onCalculate }: RoiFormProps) {
         onCalculate();
       }}
     >
-      <fieldset>
-        <legend className="mb-4 font-body text-sm text-muted-ink">
-          {ROI_COPY.buildLabel}
-        </legend>
-        <div className="flex flex-wrap gap-2">
-          {ROI_CONFIG.catalog.map((app) => {
-            const selected = value.selectedAppIds.includes(app.id);
-            return (
-              <button
-                key={app.id}
-                type="button"
-                aria-pressed={selected}
-                onClick={() => toggleApp(app.id)}
-                className={cn(
-                  "min-h-11 rounded-full border px-4 py-2 font-body text-sm transition-colors",
-                  selected
-                    ? "border-ink bg-ink text-white"
-                    : "border-line bg-surface hover:border-ink",
-                )}
-              >
-                {app.label}
-              </button>
-            );
-          })}
+      <fieldset className="flex flex-col gap-5">
+        <legend className="font-body text-xl pb-4 text-muted-ink">{ROI_COPY.buildLabel}</legend>
+
+        <div>
+          <p className="mb-2 font-body text-xs text-muted-ink">{ROI_COPY.internalToolsLabel}</p>
+          <div className="flex flex-wrap gap-2">
+            {ROI_CONFIG.catalog
+              .filter((app) => app.kind === "internal")
+              .map((app) => (
+                <AppPill key={app.id} app={app} selected={value.selectedAppIds.includes(app.id)} onToggle={toggleApp} />
+              ))}
+          </div>
+        </div>
+
+        <div>
+          <p className="mb-2 font-body text-xs text-muted-ink">{ROI_COPY.externalProductsLabel}</p>
+          <div className="flex flex-wrap gap-2">
+            {ROI_CONFIG.catalog
+              .filter((app) => app.kind === "external")
+              .map((app) => (
+                <AppPill key={app.id} app={app} selected={value.selectedAppIds.includes(app.id)} onToggle={toggleApp} />
+              ))}
+          </div>
         </div>
       </fieldset>
 
@@ -186,11 +222,10 @@ export function RoiForm({ value, onChange, onCalculate }: RoiFormProps) {
         </div>
       )}
 
-      {/* Black, not orange: the Hero's Book a call owns the one primary action. */}
       <button
         type="submit"
         disabled={!hasAny}
-        className="rounded-full bg-ink px-8 py-4 font-body text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+        className="rounded-full bg-brand px-8 py-4 font-body text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-40"
       >
         {ROI_COPY.calculate}
       </button>

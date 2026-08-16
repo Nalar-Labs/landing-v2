@@ -1,12 +1,14 @@
 // Calculator copy. Kept out of content.ts so this feature owns its own strings.
 export const ROI_COPY = {
   eyebrow: "ROI Calculator",
-  heading: "What Would it Cost?",
+  heading: "Your Costs",
   buildLabel: "What should we build for you?",
-  employeesLabel: "How many employees?",
-  paysLabel: "Are you already paying for software?",
+  internalToolsLabel: "Internal Tools",
+  externalProductsLabel: "External Products",
+  employeesLabel: "How many employees using internal tools?",
+  paysLabel: "Are you already paying for the tools?",
   spendLabel: "Your current monthly cost",
-  usersLabel: "Expected users",
+  usersLabel: "Expected users for external product",
   calculate: "Calculate",
   recalculate: "Recalculate",
   restingHeadline: "See what you would pay",
@@ -23,6 +25,11 @@ export const ROI_COPY = {
   },
   /** Shown as the stat value only in the exact-zero-saving case. */
   monthlySavingZeroValue: "About the same",
+  ourRateLabel: "Our rate",
+  agencyRateLabel: "Typical agency rate",
+  buildTimeLabel: "Est. Build time",
+  agencyBuildTimeLabel: "Typical agency build time",
+  internalSavingLabel: "Monthly savings on internal tools",
   agencyReason: {
     external: "Customer-facing products have no existing software spend to replace.",
     notPaying: "You are not replacing existing software, so there is nothing to save against.",

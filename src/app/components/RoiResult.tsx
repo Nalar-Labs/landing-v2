@@ -6,8 +6,10 @@ import {
   formatPayback,
   formatPercent,
   formatUsd,
+  type RoiInputs,
   type RoiOutcome,
 } from "../data/roi";
+import { QuoteDialog } from "./QuoteDialog";
 
 const AGENCY_RANGE = agencyShareRange();
 // Null when the agency benchmark is zero or missing — omit the teaser rather
@@ -35,7 +37,14 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
-export function RoiResult({ outcome }: { outcome: RoiOutcome | null }) {
+export function RoiResult({
+  outcome,
+  inputs,
+}: {
+  outcome: RoiOutcome | null;
+  /** Calculator state, forwarded with a quote request (owner requirement). */
+  inputs: RoiInputs;
+}) {
   return (
     <div
       aria-live="polite"
@@ -63,7 +72,10 @@ export function RoiResult({ outcome }: { outcome: RoiOutcome | null }) {
             {formatPayback(outcome.payback)}
           </p>
           <dl className="grid grid-cols-2 gap-6">
-            <Stat label="New monthly cost" value={formatUsd(outcome.newMonthly)} />
+            <Stat
+              label="Est. Cost to run & maintain"
+              value={`${formatUsd(outcome.newMonthly)}/mo`}
+            />
             {outcome.monthlySaving > 0 ? (
               <Stat
                 label={ROI_COPY.monthlySavingLabel.positive}
@@ -105,8 +117,38 @@ export function RoiResult({ outcome }: { outcome: RoiOutcome | null }) {
           </p>
           <p className="mb-8 font-body text-muted-ink">of typical agency rates</p>
           <dl className="grid grid-cols-2 gap-6">
-            <Stat label="Build time" value={`${outcome.buildMonths} months`} />
-            <Stat label="New monthly cost" value={formatUsd(outcome.newMonthly)} />
+            {/* Owner decision 2026-08-16: hourly team rates are public. The
+                pair substantiates the percentage headline above it. Project
+                totals stay internal (PRD §6). Row order: rates, build-time
+                comparison, then monthly running figures. */}
+            <Stat
+              label={ROI_COPY.ourRateLabel}
+              value={`${formatUsd(outcome.ourHourlyRate)}/hr`}
+            />
+            <Stat
+              label={ROI_COPY.agencyRateLabel}
+              value={`${formatUsd(outcome.agencyHourlyRate)}/hr`}
+            />
+            <Stat
+              label={ROI_COPY.buildTimeLabel}
+              value={`${outcome.buildMonths} months`}
+            />
+            <Stat
+              label={ROI_COPY.agencyBuildTimeLabel}
+              value={`${outcome.agencyBuildMonths} months`}
+            />
+            <Stat
+              label="Est. Cost to run & maintain"
+              value={`${formatUsd(outcome.newMonthly)}/mo`}
+            />
+            {/* Split-by-path saving: only for mixed selections whose internal
+                tools replace real spend, and never as a negative number. */}
+            {outcome.internalMonthlySaving !== null && (
+              <Stat
+                label={ROI_COPY.internalSavingLabel}
+                value={`${formatUsd(outcome.internalMonthlySaving)}/mo`}
+              />
+            )}
           </dl>
           <p className="mt-6 font-body text-muted-ink">{AGENCY_REASON_COPY[outcome.reason]}</p>
         </>
@@ -115,29 +157,44 @@ export function RoiResult({ outcome }: { outcome: RoiOutcome | null }) {
           {/* The tier rate is at or above the agency benchmark: printing
               "112% of typical agency rates" would undercut the pitch, so
               lead with build time instead of a percentage headline. */}
-          <p className="mb-2 font-body text-sm text-muted-ink">Build time</p>
+          <p className="mb-2 font-body text-sm text-muted-ink">Est. Build time</p>
           <p className="mb-8 font-display text-[56px] leading-none tracking-[-2px] tabular-nums md:text-[72px]">
             {outcome.buildMonths} months
           </p>
           <dl className="grid grid-cols-2 gap-6">
-            <Stat label="New monthly cost" value={formatUsd(outcome.newMonthly)} />
+            <Stat
+              label={ROI_COPY.agencyBuildTimeLabel}
+              value={`${outcome.agencyBuildMonths} months`}
+            />
+            <Stat
+              label="Est. Cost to run & maintain"
+              value={`${formatUsd(outcome.newMonthly)}/mo`}
+            />
+            {outcome.internalMonthlySaving !== null && (
+              <Stat
+                label={ROI_COPY.internalSavingLabel}
+                value={`${formatUsd(outcome.internalMonthlySaving)}/mo`}
+              />
+            )}
           </dl>
           <p className="mt-6 font-body text-muted-ink">{AGENCY_REASON_COPY[outcome.reason]}</p>
         </>
       )}
 
-      {/* The conversion point. Orange belongs here rather than on Calculate:
-          within this section, booking is the primary action and Calculate is
-          the step that leads to it. */}
+      {/* The conversion point: orange primary + ink secondary (one accent
+          per view — the quote button must not compete with Book a call). */}
       {outcome !== null && (
-        <a
-          href={CALENDLY_URL}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-8 inline-flex w-fit items-center gap-3 rounded-full bg-brand px-6 py-3 font-body text-white transition-colors hover:bg-brand-hover"
-        >
-          {ROI_COPY.ctaLabel}
-        </a>
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          <a
+            href={CALENDLY_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex w-fit items-center gap-3 rounded-full bg-brand px-6 py-3 font-body text-white transition-colors hover:bg-brand-hover"
+          >
+            {ROI_COPY.ctaLabel}
+          </a>
+          <QuoteDialog inputs={inputs} outcome={outcome} />
+        </div>
       )}
 
       <p className="mt-8 font-body text-xs text-muted-ink">{ROI_COPY.disclaimer}</p>

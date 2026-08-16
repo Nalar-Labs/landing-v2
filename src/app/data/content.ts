@@ -64,17 +64,17 @@ export const SERVICES: Service[] = [
   {
     title: "SaaS Should be Dead",
     description:
-      "Why pay for expensive software subscriptions when you can build it yourself, own all the code, and customize freely at a fraction of the cost.",
+      "Stop renting software that almost fits you. We build tools you own outright: all the code, shaped to your exact workflow, for way less than subscription prices.",
   },
   {
     title: "Data Should be Yours",
     description:
-      "Why give your data away to frontier labs or software vendors. Protect your most valuable business asset.",
+      "Your customers, your pricing, your operations. That knowledge is your edge, so it should stay on infrastructure you control, not on a vendor's servers.",
   },
   {
-    title: "Things Should Move 10x Faster",
+    title: "Software Should Ship 10x Faster",
     description:
-      "Don't wait a month for a new design, or spend three months building an MVP. AI has completely upended the speed of shipping software.",
+      "A new design used to take weeks and an MVP months. AI rewrote the speed limit. We can do entire end-to-end services from research, design, implementation and testing at record speeds.",
     gradient: true,
   },
 ];

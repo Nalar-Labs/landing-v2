@@ -37,7 +37,7 @@ export function Portfolio() {
 
   return (
     <section id="portfolio" className={cn(CONTAINER, SECTION.wrap)}>
-      <h2 className={cn(TYPE.h3, SECTION.titleGap)}>Portfolio</h2>
+      <h2 className={cn(TYPE.h3, SECTION.titleGap)}>Our Portfolio</h2>
       <PortfolioCarousel
         items={PORTFOLIO_ITEMS}
         onOpen={openItem}
