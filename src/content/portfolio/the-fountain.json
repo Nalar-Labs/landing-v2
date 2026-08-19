@@ -1,12 +1,12 @@
 {
-  "title": "Coconut Video",
-  "client": "Coconut Guy",
-  "summary": "The Coconut nut is a giant nut",
+  "title": "MyTutor 2.0",
+  "client": "MyTutor",
+  "summary": "MyTutor is one of the largest LMS in the Netherlands. Achieved an average learner satisfaction score of 8.1/10 and a 95% pass rate in 2026.",
   "coverImage": "",
   "logo": "",
   "tags": [],
   "order": 2,
   "draft": false,
-  "body": "Test",
-  "video": "https://youtu.be/PKQPey6L42M?si=K6pfz2LuZaLxoqOy"
+  "body": "MyTutor",
+  "video": "https://youtu.be/geX3f1eeCHA"
 }
